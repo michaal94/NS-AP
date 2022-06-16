@@ -1,0 +1,48 @@
+---
+layout: home
+paginate: true
+alt_title: "Neuro-Symbolic Action Planning"
+sub_title: "A Benchmark for Visual and Manipulation Reasoning"
+image: /assets/images/NS_AP_main_noboarder.png
+introduction: |
+  Neuro-Symbolic Action Planning is a modular simulation framework with accurate physics calculation, and high-quality visual rendering. NS-AP instroduces:
+  -  a simulation environment that uses MuJoCo physics engine with realistic
+  Blender-based renderer,
+  - a modular benchmarking pipeline that enables the use of symbolic manipulator
+  subroutines,
+  - a dataset visual and manipulation reasoning in tabletop scenario.
+actions:
+  - label: "Code"
+    icon: github
+    url: "https://github.com/michaal94/NS-AP"
+  - label: "Download"
+    icon: download
+    url: "https://michaal94.github.io/NS-AP/codebase"
+  - label: "Documentation"
+    icon: document
+    url: "https://michaal94.github.io/NS-AP-docs"
+carousels:
+  - images: 
+    - image: ./assets/images/task_gif_0.gif
+    - image: ./assets/images/task_gif_1.gif
+    - image: ./assets/images/task_gif_2.gif
+    - image: ./assets/images/task_gif_3.gif
+    - image: ./assets/images/task_gif_4.gif
+    - image: ./assets/images/task_gif_5.gif
+    - image: ./assets/images/task_gif_6.gif
+    - image: ./assets/images/task_gif_7.gif
+    - image: ./assets/images/task_gif_8.gif
+    - image: ./assets/images/task_gif_9.gif
+---
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org/",
+    "@type": "Dataset",
+    "name": "Neuro-Symbolic Action Planning",
+    "url": "https://michaal94.github.io/NS-AP/codebase/",
+    "description": "We propose the dataset for visual and mainpulation reasoning. We provide a set of high-quality visual scenes associated with natural language instructions. Along that, we provide ground truth sequences of actions that lead to successful task execution along with collected visual and physical observations. Visit our website https://michaal94.github.io/NS-AP for more information. Head to https://michaal94.github.io/NS-AP/codebase/ to find download links. Due to larger size of the dataset, we enable download of smaller samples, and download separated with respect to instruction objectives.",
+    "creator":{"@type":"Person","name":"Michal Nazarczuk"},
+    "license": "MIT"
+  }
+</script>
+{% include carousel.html width="70%" height="63.2" unit="%" duration="60" number="1" %}
