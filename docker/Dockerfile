@@ -51,7 +51,7 @@ RUN apt-get update \
 #     && ln -s /opt/conda /bin/2.83/python
 #     # && echo $WORKING_DIR/scene_generation >> /bin/2.83/python/lib/python3.7/site-packages/scene_generation.pth
 
-RUN wget https://builder.blender.org/download/daily/archive/blender-2.83.20-stable+v283.a56e2faeb7a9-linux.x86_64-release.tar.xz \
+RUN wget https://download.blender.org/release/Blender2.83/blender-2.83.20-linux-x64.tar.xz \
 	&& tar -xvf blender-2.83.20* --strip-components=1 -C /bin \
 	&& rm -rf blender-2.83.20* \
 	&& rm -rf blender-2.83.20* \
