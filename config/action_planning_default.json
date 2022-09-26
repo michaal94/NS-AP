@@ -1,0 +1,37 @@
+{
+    "supervisor": {
+        "epochs": 50,
+        "tensorboard": true,
+        "logdir": "./output/actions/BASELINE",
+        "debug_log": true,
+        "debug_freq": 250,
+        "display_freq": 20,
+        "checkpoint_freq": 400
+    },
+    "dataset_train": {
+        "name": "ActionPlanNSAP",
+        "split": "train",
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "shuffle": true,
+        "batch": 512,
+        "num_workers": 8
+    },
+    "dataset_val": {
+        "name": "ActionPlanNSAP",
+        "split": "val",
+        "only_selected": true,
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "shuffle": false,
+        "batch": 64,
+        "num_workers": 8
+    },
+    "loss": {},
+    "optimiser": {
+        "name": "Adam"
+    },
+    "scheduler": {},
+    "model": {
+        "trainer_name": "BaselineActionTrainer",
+        "model_name": "BaselineActionModel"
+    }
+}

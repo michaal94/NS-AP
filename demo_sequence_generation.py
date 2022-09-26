@@ -13,7 +13,7 @@ else:
 
 import json
 import argparse
-from model.inference import InferenceTool, InferenceCode
+from model.inference_eqa import InferenceTool, InferenceCode
 from utils.utils import extract_args
 
 parser = argparse.ArgumentParser()
@@ -47,7 +47,7 @@ def main(args):
     if not INSIDE_BLENDER:
         environment_params = {
             "robots":'Panda',
-            "gripper_types":'Robotiq85GripperContinuous',
+            "gripper_types":'PandaGripperContinuous',
             "has_offscreen_renderer": False,
             "ignore_done": True,
             "use_camera_obs": False,
@@ -67,7 +67,7 @@ def main(args):
     else:
         environment_params = {
             "robots":'Panda',
-            "gripper_types":'Robotiq85GripperContinuous',
+            "gripper_types":'PandaGripperContinuous',
             "has_offscreen_renderer": False,
             "ignore_done": True,
             "use_camera_obs": False,
@@ -83,7 +83,7 @@ def main(args):
             "has_renderer": False,
             "blender_render": True,
             "output_render_path": f'output/temp',
-            "blender_config_path": "./environment/blender_default_cfg.json",
+            "blender_config_path": "./environment/blender_eqa_cfg.json",
             "controller_config_path": "./environment/controller_cfg.json"
         }
 

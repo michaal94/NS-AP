@@ -54,3 +54,14 @@ class ShopVrbXMLFilesTrain:
     wine_glass1 = './assets/train/wine_glass1.xml'
     wine_glass2 = './assets/train/wine_glass2.xml'
     wine_glass3 = './assets/train/wine_glass3.xml'
+
+
+class YCBXMLFiles:
+    bleach_cleanser = './assets/ycb/bleach_cleanser.xml'
+    cracker_box = './assets/ycb/cracker_box.xml'
+    sugar_box = './assets/ycb/sugar_box.xml'
+    mustard_bottle = './assets/ycb/mustard_bottle.xml'
+
+    @staticmethod
+    def get(name, mode='train'):
+        return getattr(YCBXMLFiles, name)

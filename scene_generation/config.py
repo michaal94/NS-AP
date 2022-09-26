@@ -247,6 +247,8 @@ class Config:
             self.render_tile_size = args_dict["render_tile_size"]
         if "active_cam" in args_dict:
             self.active_cam = args_dict["active_cam"]
+        if "gripper_init_config" in args_dict:
+            self.gripper_init_config = args_dict["gripper_init_config"]
 
     def __str__(self):
         msg = ""

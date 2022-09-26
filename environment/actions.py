@@ -134,6 +134,10 @@ class ActionExecutor:
         bbox = scene[target]['bbox']
         z_coords = bbox[:, 2]
         min_z = np.amin(z_coords)
+        #TODO
+        # That can be better
+        scene[target]['pos'][0] = obs['robot0_eef_pos'][0]
+        scene[target]['pos'][1] = obs['robot0_eef_pos'][1]
         obj_below_clearance = self._get_below_clearance(target, scene)
         if obj_below_clearance > 0:
             put_down_clearance = 0.0
@@ -160,6 +164,7 @@ class ActionExecutor:
             target_pos[0],
             target_pos[1]
         )
+        # print(target_pos_xy)
         for idx, obj in enumerate(scene):
             # print(obj['file'])
             # print(target)
@@ -168,34 +173,46 @@ class ActionExecutor:
             obj_z_dir = T.quat2mat(obj['ori'])[:, 2]
             # PRINT HERE
             # print(obj_z_dir)
-            if self._angle_between(obj_z_dir, np.array([0, 0, 1])) < self.angle_up_tolerance:
-                rec = Rectangle(
-                    Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-                    Point(obj['bbox'][1][0], obj['bbox'][1][1]),
-                    Point(obj['bbox'][2][0], obj['bbox'][2][1]),
-                    Point(obj['bbox'][3][0], obj['bbox'][3][1])
-                )
-            else:
-                rec1 = Rectangle(
-                    Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-                    Point(obj['bbox'][1][0], obj['bbox'][1][1]),
-                    Point(obj['bbox'][5][0], obj['bbox'][5][1]),
-                    Point(obj['bbox'][4][0], obj['bbox'][4][1])
-                )
-                rec2 = Rectangle(
-                    Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-                    Point(obj['bbox'][4][0], obj['bbox'][4][1]),
-                    Point(obj['bbox'][7][0], obj['bbox'][7][1]),
-                    Point(obj['bbox'][3][0], obj['bbox'][3][1])
-                )
-                if rec1.area() > rec2.area():
-                    rec = rec1
-                else:
-                    rec = rec2
+            # if self._angle_between(obj_z_dir, np.array([0, 0, 1])) < self.angle_up_tolerance:
+            #     rec = Rectangle(
+            #         Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+            #         Point(obj['bbox'][1][0], obj['bbox'][1][1]),
+            #         Point(obj['bbox'][2][0], obj['bbox'][2][1]),
+            #         Point(obj['bbox'][3][0], obj['bbox'][3][1])
+            #     )
+            # else:
+            #     print('side')
+            #     rec1 = Rectangle(
+            #         Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+            #         Point(obj['bbox'][1][0], obj['bbox'][1][1]),
+            #         Point(obj['bbox'][5][0], obj['bbox'][5][1]),
+            #         Point(obj['bbox'][4][0], obj['bbox'][4][1])
+            #     )
+            #     rec2 = Rectangle(
+            #         Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+            #         Point(obj['bbox'][4][0], obj['bbox'][4][1]),
+            #         Point(obj['bbox'][7][0], obj['bbox'][7][1]),
+            #         Point(obj['bbox'][3][0], obj['bbox'][3][1])
+            #     )
+            #     if rec1.area() > rec2.area():
+            #         rec = rec1
+            #     else:
+            #         rec = rec2
+            rec = Rectangle(
+                Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+                Point(obj['bbox'][1][0], obj['bbox'][1][1]),
+                Point(obj['bbox'][2][0], obj['bbox'][2][1]),
+                Point(obj['bbox'][3][0], obj['bbox'][3][1])
+            )
+            # print(obj['name'])
+            # print(rec)
             height = np.amax(obj['bbox'][:, 2])
             if rec.contains(target_pos_xy):
                 if height > clearance:
                     clearance = height
+
+        # print(clearance)
+        # exit()
         return clearance
 
     def _set_move_table_part(self, target, obs, scene):
@@ -1289,6 +1306,9 @@ class Vector:
         self.ps = p1
         self.pe = p2
 
+    def __str__(self):
+        return f"({str(self.ps)}->{str(self.pe)})"
+
     def intersects(self, vec):
         if vec.is_2d():
             assert self.is_2d()
@@ -1376,6 +1396,12 @@ class Rectangle:
             Vector(p3, p4),
             Vector(p4, p1),
         ]
+
+    def __str__(self):
+        msg = ''
+        for s in self.sides:
+            msg += f"{str(s)}, "
+        return msg
 
     def intersects(self, vec):
         for side in self.sides:

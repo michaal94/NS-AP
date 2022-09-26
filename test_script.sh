@@ -1,0 +1,1 @@
+blender -b -noaudio --python tester.py -- --input_instruction_json /media/m2data/NS_AP/NS_AP_v1_0_a/weight_single/test/instructions.json --input_scene_dir /media/m2data/NS_AP/NS_AP_v1_0_a/weight_single/test/scenes --output_dir ./output/sequence_generation --input_instruction_num 0

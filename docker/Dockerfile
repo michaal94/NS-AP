@@ -23,7 +23,7 @@ RUN curl -fsSL -v -o ~/miniconda.sh -O  https://repo.anaconda.com/miniconda/Mini
     /opt/conda/bin/conda install -y python=3.7.4 conda-build pyyaml numpy ipython&& \
     /opt/conda/bin/conda clean -ya
 
-RUN conda install pytorch=1.10.0 torchvision torchaudio cudatoolkit=11.3 -c pytorch
+RUN conda install pytorch=1.10.0 torchvision torchaudio tensorboard cudatoolkit=11.3 -c pytorch
 
 RUN apt-get update \
     && apt-get install -y \
@@ -51,7 +51,8 @@ RUN apt-get update \
 #     && ln -s /opt/conda /bin/2.83/python
 #     # && echo $WORKING_DIR/scene_generation >> /bin/2.83/python/lib/python3.7/site-packages/scene_generation.pth
 
-RUN wget https://builder.blender.org/download/daily/archive/blender-2.83.20-stable+v283.a56e2faeb7a9-linux.x86_64-release.tar.xz \
+# RUN wget https://builder.blender.org/download/daily/archive/blender-2.83.20-stable+v283.a56e2faeb7a9-linux.x86_64-release.tar.xz \
+RUN wget https://download.blender.org/release/Blender2.83/blender-2.83.20-linux-x64.tar.xz \
 	&& tar -xvf blender-2.83.20* --strip-components=1 -C /bin \
 	&& rm -rf blender-2.83.20* \
 	&& rm -rf blender-2.83.20* \
@@ -70,7 +71,8 @@ RUN wget https://builder.blender.org/download/daily/archive/blender-2.83.20-stab
 # RUN chown 777 -R /usr/local/.mujoco
 # RUN chmod 777 -R /usr/local/.mujoco
 
-RUN pip install opencv-python pycocotools
+RUN pip install setuptools==59.5.0
+RUN pip install opencv-python pycocotools h5py tqdm
 RUN pip install -U mujoco-py==2.1.2.14
 RUN pip install pip install robosuite
 RUN chown 777 -R /opt/conda/lib/python3.7/site-packages/mujoco_py

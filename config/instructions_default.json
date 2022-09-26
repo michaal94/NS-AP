@@ -1,0 +1,40 @@
+{
+    "supervisor": {
+        "epochs": 1000,
+        "tensorboard": true,
+        "logdir": "./output/instructions/BASELINE",
+        "debug_log": true,
+        "debug_freq": 250,
+        "display_freq": 25,
+        "checkpoint_freq": 200
+    },
+    "dataset_train": {
+        "name": "InstructionsNSAP",
+        "split": "train",
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "shuffle": true,
+        "batch": 512,
+        "num_workers": 8
+    },
+    "dataset_val": {
+        "name": "InstructionsNSAP",
+        "split": "val",
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "shuffle": false,
+        "batch": 128,
+        "num_workers": 8
+    },
+    "loss": {},
+    "optimiser": {
+        "name": "Adam"
+    },
+    "scheduler": {},
+    "model": {
+        "trainer_name": "BaselineSeq2SeqTrainer",
+        "model_name": "BaselineSeq2SeqModel",
+        "vocab_path": "/media/m2data/NS_AP/NS_AP_v1_0_a/stack/train/vocab.json",
+        "input_dropout": 0.05,
+        "dropout": 0.1
+        
+    }
+}

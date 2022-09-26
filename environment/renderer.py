@@ -251,7 +251,7 @@ class BlenderRenderer:
             gripper_parts = []
             for obj in bpy.data.collections['Gripper'].all_objects:
                 gripper_parts.append(obj)
-
+            # print(gripper_parts)
             for g_part in gripper_parts:
                 i = i + 1
                 create_shadeless_copy(g_part, i, (127, 127, 127))

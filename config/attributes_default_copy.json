@@ -1,0 +1,39 @@
+{
+    "supervisor": {
+        "epochs": 100,
+        "tensorboard": true,
+        "logdir": "./output/attributes/BASELINE",
+        "debug_log": true,
+        "debug_freq": 250,
+        "display_freq": 10,
+        "checkpoint_freq": 50
+    },
+    "dataset_train": {
+        "name": "AttributesNSAP",
+        "split": "val",
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "only_selected": true,
+        "shuffle": false,
+        "batch": 1,
+        "num_workers": 8
+    },
+    "dataset_val": {
+        "name": "AttributesNSAP",
+        "split": "val",
+        "only_selected": true,
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "shuffle": false,
+        "batch": 6,
+        "num_workers": 8
+    },
+    "loss": {},
+    "optimiser": {
+        "name": "Adam"
+    },
+    "scheduler": {},
+    "model": {
+        "trainer_name": "AttributesBaselineTrainer",
+        "model_name": "AttributesBaselineModel",
+        "ce_num": 5
+    }
+}

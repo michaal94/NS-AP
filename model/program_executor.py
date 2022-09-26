@@ -69,6 +69,7 @@ class ProgramExecutor:
                 if 'filter' in program:
                     output = self._call_filter_nonaction(stack[-1], program)
                     stack[-1] = output
+            # print(output)
         self._reset_scene()
         return {
             'STATUS': ProgramStatus.SUCCESS,

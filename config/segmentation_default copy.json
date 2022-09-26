@@ -1,0 +1,40 @@
+{
+    "supervisor": {
+        "epochs": 100,
+        "tensorboard": true,
+        "logdir": "./output/segmentation/BASELINE",
+        "debug_log": true,
+        "debug_freq": 250,
+        "display_freq": 1,
+        "checkpoint_freq": 1
+    },
+    "dataset_train": {
+        "name": "SegmentationNSAP",
+        "split": "val",
+        // "path": "/home/michal/datasets/NS_AP_v1_0_a",
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "subtasks": ["stack"],
+        "shuffle": true,
+        "batch": 32,
+        "num_workers": 32
+    },
+    "dataset_val": {
+        "name": "SegmentationNSAP",
+        "split": "val",
+        // "path": "/home/michal/datasets/NS_AP_v1_0_a",
+        "path": "/media/m2data/NS_AP/NS_AP_v1_0_a",
+        "subtasks": ["stack"],
+        "shuffle": false,
+        "batch": 16,
+        "num_workers": 32
+    },
+    "loss": {},
+    "optimiser": {
+        "name": "SGD"
+    },
+    "scheduler": {},
+    "model": {
+        "trainer_name": "BaselineSegmentationTrainer",
+        "model_name": "BaselineSegmentation"
+    }
+}
