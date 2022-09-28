@@ -145,7 +145,7 @@ class InferenceTool:
         self.scene_graph_gt = self._make_scene_graph(scene_vis_gt, poses_gt, bboxes_gt)
 
         self.environment.print_robot_configuration()
-        input()
+        # input()
 
         if self.environment.blender_enabled:
             self.update_sequence_json(observation, ('START', None))

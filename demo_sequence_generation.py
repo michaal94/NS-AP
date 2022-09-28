@@ -93,14 +93,14 @@ def main(args):
     sequences_dir = args.output_dir
     os.makedirs(sequences_dir, exist_ok=True)
 
-    print('Please choose instruction to run demo for:')
-    for i, instr in enumerate(instruction_struct['instructions']):
-        print(f"{i}. {instr['instruction']}")
-    idx = input("Choose instruction idx [0-9]:")
-    if idx not in [str(i) for i in range(10)]:
-        print("Wrong idx chosen, try again")
-        exit()
-    idx = int(idx)
+    # print('Please choose instruction to run demo for:')
+    # for i, instr in enumerate(instruction_struct['instructions']):
+    #     print(f"{i}. {instr['instruction']}")
+    # idx = input("Choose instruction idx [0-9]:")
+    # if idx not in [str(i) for i in range(10)]:
+    #     print("Wrong idx chosen, try again")
+    #     exit()
+    idx = 0
     instr = instruction_struct['instructions'][idx]
     print(f"Chosen instruction:\t{instr['instruction']}")
 

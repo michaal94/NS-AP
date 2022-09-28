@@ -1,0 +1,211 @@
+{
+    "info": {
+        "date": "28/09/2022",
+        "version": "YCB",
+        "split": "demo",
+        "license": "Creative Commons Attribution (CC-BY 4.0)"
+    },
+    "scenes": [
+        {
+            "split": "demo",
+            "image_index": 0,
+            "image_filename": "NS_AP_demo_000000.png",
+            "objects": [
+                {
+                    "file": "mustard_bottle",
+                    "name": "mustard bottle",
+                    "shape": "irregularly shaped",
+                    "size": "large",
+                    "material": "plastic",
+                    "3d_coords": [
+                        0.5283694863319397,
+                        -0.25404393672943115,
+                        0.0
+                    ],
+                    "orientation": [
+                        0.15808264911174774,
+                        0.0,
+                        0.0,
+                        0.9874258637428284
+                    ],
+                    "rotation": 161.8087569989152,
+                    "pixel_coords": [
+                        305,
+                        378,
+                        0.6415342688560486
+                    ],
+                    "colour": "yellow",
+                    "weight_gt": 604.3,
+                    "weight": null,
+                    "movability": "portable",
+                    "bbox": {
+                        "x": 0.09598095715045929,
+                        "y": 0.058198802173137665,
+                        "z": 0.1913120150566101
+                    },
+                    "scale_factor": 1.0,
+                    "stackable": true,
+                    "stack_base": false,
+                    "pickupable": true,
+                    "mask": {
+                        "size": [
+                            480,
+                            848
+                        ],
+                        "counts": "Unl3d0S>k0ZO?bCVOl9Y3E5M2M2O1N3N1O1O1N2CVKcFk4\\9\\K^Fd4a9>00000000O1N3G8L4L4O101O0000000000000000O1000000O10002M5L3M6I4M1N10000O101N10=B2O1N2N2O1N2N2N3N1N3M3M6Jb0^Ok0TOS1nNe0YO\\V_7"
+                    }
+                },
+                {
+                    "file": "bleach_cleanser",
+                    "name": "bleach cleanser",
+                    "shape": "irregularly shaped",
+                    "size": "large",
+                    "material": "plastic",
+                    "3d_coords": [
+                        0.6882236003875732,
+                        -0.02569141797721386,
+                        0.0
+                    ],
+                    "orientation": [
+                        0.876075804233551,
+                        0.0,
+                        0.0,
+                        0.4821733832359314
+                    ],
+                    "rotation": 57.654891302849414,
+                    "pixel_coords": [
+                        557,
+                        445,
+                        0.4868514835834503
+                    ],
+                    "colour": "white",
+                    "weight_gt": 588.7,
+                    "weight": null,
+                    "movability": "portable",
+                    "bbox": {
+                        "x": 0.10242000222206116,
+                        "y": 0.06771500408649445,
+                        "z": 0.2505960166454315
+                    },
+                    "scale_factor": 1.0,
+                    "stackable": true,
+                    "stack_base": false,
+                    "pickupable": true,
+                    "mask": {
+                        "size": [
+                            480,
+                            848
+                        ],
+                        "counts": "abV72d>>J4L3N2N2M3M2\\Oe0_O`0C>D;E<E:G9H9H7I7I8I6J6K5K6I6L4K6J5L4L4M4M2N2N3N1N2N2N3M2N2_NnHQKV7m4QIkJQ7T5RIgJQ7X5RIcJQ7\\5RI_JR7`5RIVJT7i5R1O101N1O1O2O0O1O1O2N100O1O2N1O1N2O2M200YOaFmK_9o3TGaKn8]4k0000000O2O000000001O000000001O00000000001O00000000001O0000000000001O00[EnK\\:R4cEPL\\:P4dEQL[:P4dEPL>I]9W4TFQL?H]9a4aFbK^9P5O2O1O1N2O1O0O2N101N1O2O0O1O2M2O1O2M2O2M3M4K6E:C>B=C>A?A?@`0_Oa0eKUFk2^:oLRFn1g:mMTF1X;IU2IfST3"
+                    }
+                }
+            ],
+            "directions": {
+                "behind": [
+                    -0.9998477697372437,
+                    0.017452329397201538,
+                    0.0
+                ],
+                "front": [
+                    0.9998477697372437,
+                    -0.017452329397201538,
+                    -0.0
+                ],
+                "left": [
+                    -0.017452297732234,
+                    -0.9998476505279541,
+                    0.0
+                ],
+                "right": [
+                    0.017452297732234,
+                    0.9998476505279541,
+                    -0.0
+                ],
+                "above": [
+                    0.0,
+                    0.0,
+                    1.0
+                ],
+                "below": [
+                    -0.0,
+                    -0.0,
+                    -1.0
+                ]
+            },
+            "camera_params": {
+                "position": [
+                    1.1496347188949585,
+                    -0.1398545801639557,
+                    0.22131800651550293
+                ],
+                "rotation": [
+                    83.00000117132056,
+                    0.0,
+                    89.00000133828577
+                ],
+                "rotation_mode": "EulerXYZ"
+            },
+            "lamp_params": {
+                "Lamp_Key": [
+                    3.2621705532073975,
+                    -2.042968988418579,
+                    2.1823983192443848
+                ],
+                "Lamp_Back": [
+                    -1.8227486610412598,
+                    1.9985458850860596,
+                    2.2821929454803467
+                ],
+                "Lamp_Fill": [
+                    -2.3616771697998047,
+                    -2.963789463043213,
+                    2.5468125343322754
+                ]
+            },
+            "table": {
+                "mask": {
+                    "size": [
+                        480,
+                        848
+                    ],
+                    "counts": "oTS11n>1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1O1O1O1O1O1O1O100O1O1O1O1O1:[K^GX2m:H2N1O00001O0000000000000000000000001O000000001O0000000000000000O1000000O10000O10000O100O10000O100O100O100O1O100O1O1O100O1O1O1O1O1cL_MYJc2g5^NWIc1i6QO`HR1`7W30000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000gIkGg5U8VJnGj5R8UJoGk5Q8TJQHk5o7TJRHl5n7SJSHm5m7QJUHo5k7PJVHP6j7oIWHQ6k7lIVHT6[801O00000000001O0000001O00000000001O00000000000000001O00000000000000000000000000000000000aNRGlLn8j2`GRM`8l2dGRM\\8l2gGSMY8l2iGSMW8l2kGSMU8k2nGTMR8j2PHVMP8V2eHiM[7g1UIYNk6Z1cIeN]6P1nIPOR6e0ZJZOf5<dJD\\53mJMS5KVK4j4E]K;b4_OeKa0[4XOmKg0S4SOSLm0P90001O00001O0000001O00001O0000001O00001O0000001O0000001O00001O0000001O0000001O0000001O0000001O000000001O000000001O000000001O00000000001O00000000001O0000000000001O00000000000000O10000O10000O1O100O1O100O1O1N2O1O1N2O1N2N2M3H8E;E;E;D<D<C=B>@`0ZOf0gNY1C=000000000000000000000000000000001O00000000001O001O00001O00001O001O001O00001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O00001O001O001O00001O001O00001O001O00001O001O001O"
+                }
+            },
+            "robot": {
+                "mask": {
+                    "size": [
+                        480,
+                        848
+                    ],
+                    "counts": "Q`T6>^>8J4K5M3L4M2M3N2N3M1O2O1O1N101O1O1N2ZGXNR4i1jKZNV4g1hKZNX4g1fK[NX4g1fKZNZ4g1dKZN\\4g1aK[N_4f1lJSNQM8S8g1fJVNUM4T8h1dJWNnLI09]8i1dJUNoL:[8e1bJmN[5W1`JlN^5X1_JiN`5Z1\\JhNc5[1ZJfNe5]1XJdNg5`1UJbNi5c1RJ^Nm5h1lIZNT6o1_IUN`6W5mNZIjIf6\\5XJ`Jh5`5ZJ]Jg5c5ZJ\\Jf5d5[J[Je5e5\\JZJe5e5[JZJf5f5ZJZJf5f5[JYJe5g5[JYJe5g5\\JXJd5h5]JWJc5i5]JWJc5i5^JVJb5j5_JUJb5j5^JVJb5j5_JUJa5k5_JUJa5k5`JTJ`5l5`JTJ`5l5aJSJ_5m5aJSJ_5m5bJRJ^5n5bJRJ^5n5cJQJ]5o5cJQJ]5o5j10000000YKRJ<n5DTJ:l5FVJ8j5HXJ6h5JZJ4f5I_J5a5K`J4`5LbJ2^5NcJ1]5OcJ1]5OdJ0\\50dJ0\\50dJ0\\50dJ0\\50dJ0\\50dJ0\\50gJMY53gJMY53hJLX54iJJX56hJJX56iJIW57jJC[5=fJ]O_5c0bJWOc5i0_JoNg5Q1ZJjNj5V1YJbNl5^1WJVL6<h5^3mK[LW4e3jKVLZ4j3hKQL[4o3fKnK\\4R4eKkK]4U4W3000000O10000dMVEb0j:^OXE`0h:@ZE>f:B[E<f:D[E;e:E\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:F\\E:d:E]E;c:E]E;c:E]E;c:E^E:b:F^E:b:F^E:b:F^E:b:F^E8d:H\\E4h:LXE3i:LVE6j:JUE7k:IUE7k:IUE6l:JSE7m:HTE8l:HRE:n:FRE:n:FQE;o:EQE;o:DRE<n:DRE<n:DRE<n:CSE=m:CSE=m:BTE>l:AUE?k:AUE?k:_OWEa0i:\\OWEg0i:h10cMnDl0R;a1000000000^MmDW1S;hNnDX1R;hNnDX1R;gNoDY1Q;eNQE[1o:oMTEJ1W2k:PNTEH1X2k:PNSEI2W2KcMh:=[EI2W2JdMi:=ZEH3W2JdMi:=ZEG4Y2HcMj:=[EF4Y2FeMk:<[EF4`2a:jM[ED6b2_:jMnEV2R:jMnEV2R:jMnEV2R:jMnEV2R:jMnEV2R:jMnEV2R:jMnEV2R:jMnEV2R:kMmEU2S:kMmEU2S:kMlEV2T:jMlEV2T:jMlEV2T:jMlEV2T:jMlEV2T:jMlEV2T:jMlEV2T:iMmEW2S:hMoEW2Q:hMPFX2P:hMPFX2P:gMQFJTOU2k:PNTFGSOY2i:oMVFHPOY2j:oMWFGoNZ2j:nMXFHnNY2k:nMXFJlNW2m:nMYFV2h9iMYFV2h9iMZFU2g9kMZFS2g9lM[Fh0fN7Q;PO[Ff0oN0g:YO]Fc0o:\\OTE?o:@WENV;1m1OQ^R3"
+                }
+            },
+            "relationships": {
+                "behind": [
+                    [],
+                    [
+                        0
+                    ]
+                ],
+                "front": [
+                    [
+                        1
+                    ],
+                    []
+                ],
+                "left": [
+                    [],
+                    [
+                        0
+                    ]
+                ],
+                "right": [
+                    [
+                        1
+                    ],
+                    []
+                ]
+            }
+        }
+    ]
+}

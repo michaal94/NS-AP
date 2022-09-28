@@ -1,0 +1,65 @@
+{
+    "info": {
+        "date": "28/09/2022",
+        "version": "YCB",
+        "split": "demo",
+        "license": "Creative Commons Attribution (CC-BY 4.0)"
+    },
+    "instructions": [
+        {
+            "split": "demo",
+            "image_filename": "NS_AP_demo_000000.png",
+            "image_index": 0,
+            "instruction": "Pick up the lightest of all plastic objects.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        0,
+                        1
+                    ],
+                    "input_value": "plastic",
+                    "output": [
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        0,
+                        1
+                    ],
+                    "input_value": "lightest",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "type": "pick_up",
+                    "input": [
+                        1
+                    ],
+                    "input_value": null,
+                    "output": [
+                        1
+                    ]
+                }
+            ],
+            "template_id": "pick_up_lightest",
+            "task_id": "pick_up",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}

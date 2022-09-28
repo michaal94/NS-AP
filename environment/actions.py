@@ -23,7 +23,7 @@ class ActionExecutor:
         self.angle_up_tolerance = np.pi / 6
         self.angle_diff_tol = np.pi / 45
         self.eps_move_l1_ori = np.pi / 180
-        self.grasp_depth = 0.02
+        self.grasp_depth = 0.03
         self.env = env
         self.grasp_buffer = None
         self.grasp_buffer_size = 5
@@ -716,6 +716,11 @@ class ActionExecutor:
             self._set_approach_rant(target, obs, scene)
         elif 'pan' in target_name:
             self._set_approach_top_handle(target, obs, scene)
+        elif 'mustard bottle' in target_name:
+            self._set_approach_cylinder(target, obs, scene)
+        elif 'bleach cleanser' in target_name:
+            self._set_approach_cylinder(target, obs, scene)
+        self.gripper_dir = -1.0
     
     def _set_approach_cylinder(self, target, obs, scene):
         self.move_dict = {}

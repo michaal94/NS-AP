@@ -1,10 +1,10 @@
 #!/bin/bash
 if [ $1 == "blender" ]; then
     echo "Running demo in Blender"
-    blender -b -noaudio --python demo_sequence_generation.py -- --input_instruction_json ./demo/demo_input/NS_AP_demo_instructions.json --input_scene_dir ./output/scene_generation_ycb/scenes --output_dir ./output/sequence_generation_ycb
+    blender -b -noaudio --python demo_sequence_generation.py -- --input_instruction_json ./output_shared/NS_AP_demo_instructions.json --input_scene_dir ./output_shared/scenes --output_dir ./output_shared
 elif [ $1 == "mujoco" ]; then
     echo "Running with MuJoCo display"
-    python demo_sequence_generation.py --input_instruction_json ./demo/demo_input/NS_AP_demo_instructions.json --input_scene_dir ./output/scene_generation_ycb/scenes --output_dir ./output/sequence_generation_ycb
+    python demo_sequence_generation.py --input_instruction_json ./output_shared/NS_AP_demo_instructions.json --input_scene_dir ./output_shared/scenes --output_dir ./output_shared
 else
     echo "Provide an argument where to display output: [blender, mujoco]"
 fi
