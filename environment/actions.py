@@ -51,6 +51,7 @@ class ActionExecutor:
         self.interp_dist = 0.05
         self.max_interp = 0
         self.interpolate_free_movement = False
+        self.decouple = True
 
     def set_action(self, action, target, obs, scene):
         self.action = action
@@ -535,14 +536,17 @@ class ActionExecutor:
                     self._unset_action()
                     return [0, 0, 0, 0, 0, 0, self.gripper_dir]
             else:
-                # return [pos_diff[0], pos_diff[1], pos_diff[2], ori_diff[0], ori_diff[1], ori_diff[2], self.gripper_dir]
-                if diff_ori < eps_ori:
-                    # print('pos')
-                    return [pos_diff[0], pos_diff[1], pos_diff[2], 0, 0, 0, self.gripper_dir]
-                else:
-                    # print('ori')
+                if self.decouple:
                     # return [pos_diff[0], pos_diff[1], pos_diff[2], ori_diff[0], ori_diff[1], ori_diff[2], self.gripper_dir]
-                    return [0, 0, 0, ori_diff[0], ori_diff[1], ori_diff[2], self.gripper_dir]
+                    if diff_ori < eps_ori:
+                        # print('pos')
+                        return [pos_diff[0], pos_diff[1], pos_diff[2], 0, 0, 0, self.gripper_dir]
+                    else:
+                        # print('ori')
+                        # return [pos_diff[0], pos_diff[1], pos_diff[2], ori_diff[0], ori_diff[1], ori_diff[2], self.gripper_dir]
+                        return [0, 0, 0, ori_diff[0], ori_diff[1], ori_diff[2], self.gripper_dir]
+                else:
+                    return [pos_diff[0], pos_diff[1], pos_diff[2], ori_diff[0], ori_diff[1], ori_diff[2], self.gripper_dir]
         else:
             curr_ori = T.quat2axisangle(eef_ori)
             # return [eef_pos[0], eef_pos[1], eef_pos[2], curr_ori[0], curr_ori[1], curr_ori[2], self.gripper_dir]
