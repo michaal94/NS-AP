@@ -2330,9 +2330,10 @@ class InferenceToolDebug:
     
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
-        print(list(des_pose))
+        msg = ' '.join(des_pose)
+        print(msg)
         # exit()
-        self._socket_pose_control.send_string(' '.join(des_pose))
+        self._socket_pose_control.send_string(msg)
         if gripper_action != self.gripper_msg_prev:
             self._socket_gripper_control.send(gripper_action)
             self._socket_gripper_control.recv()
