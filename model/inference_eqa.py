@@ -1733,13 +1733,16 @@ class InferenceToolDebug:
         
         image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
         image_robot.save('./output_shared/test.png')
-        print(poses, poses_robot)
+        # print(poses, poses_robot)
 
-        exit()
+        # exit()
 
         scene_vis = self.visual_recognition_model.get_scene(image, None, self.scene_gt)
         scene_vis_gt = self.visual_recognition_model_gt.get_scene(image, None, self.scene_gt)
         
+        print(scene_vis)
+        exit()
+
         self.scene_graph = self._make_scene_graph(scene_vis, poses, bboxes)
         self.scene_graph_gt = self._make_scene_graph(scene_vis_gt, poses_gt, bboxes_gt)
 
