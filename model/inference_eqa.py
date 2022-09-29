@@ -1829,7 +1829,8 @@ class InferenceToolDebug:
                                 action[6] = self.previous_gripper_action
                             if self.action_executor_robot.get_current_action():
                                 action_robot = self.action_executor_robot.step(observation_robot)
-
+                                print(action_robot)
+                                exit()
                             else:
                                 action_robot = self.default_environment_action
                                 action_robot[6] = self.previous_gripper_action_robot
