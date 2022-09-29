@@ -1847,7 +1847,7 @@ class InferenceToolDebug:
                         observation_robot = self._get_observation_robot(observation)
                         self.previous_gripper_action = action[6]
                         self.previous_gripper_action_robot = action_robot[6]
-                    print(observation['gripper_action'])
+                        print(observation['gripper_action'])
                     if action_executed:
                         if self.environment.blender_enabled:
                             image_path = self.environment.blender_render()
@@ -2276,12 +2276,21 @@ class InferenceToolDebug:
         finger2_pos = joint_state['position'][-1]
         finger1_vel = joint_state['velocity'][-2]
         finger2_vel = joint_state['velocity'][-1]
-        if finger1_pos < 0.039 and finger2_pos < 0.039:
+        finger_reach = 0.03988
+        if finger1_pos < 0.039 and finger2_pos < 0.039 and np.abs(finger1_vel) < 0.001 and np.abs(finger2_vel) < 0.001:
             gripper_closed = True
-        if finger1_vel > 0.001 and finger2_vel > 0.001:
-            gripper_action = -1.0
         else:
-            gripper_action = 1.0
+            gripper_closed = False
+        
+        finger1_perc_close = 1.0 - finger1_pos / finger_reach
+        finger2_perc_close = 1.0 - finger2_pos / finger_reach
+        gripper_close_perc = 0.5 * (finger1_perc_close + finger2_perc_close)
+        gripper_action = 2 * gripper_close_perc - 1.0
+
+        # if finger1_vel > 0.001 and finger2_vel > 0.001:
+        #     gripper_action = -1.0
+        # else:
+        #     gripper_action = 1.0
 
         # joint_state = 
         # print(state)
