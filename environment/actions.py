@@ -520,7 +520,7 @@ class ActionExecutor:
         #     self.max_interp = len(self.move_dict['trajectory'])
         #     print(self.max_interp)
         # print(len(self.move_dict['trajectory']))
-        # print(diff_pos, eps_pos, diff_ori, eps_ori)
+        print(diff_pos, eps_pos, diff_ori, eps_ori)
         if self.delta_control:
             if diff_pos < eps_pos and diff_ori < eps_ori:
                 # print('both good')
