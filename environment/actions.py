@@ -462,7 +462,7 @@ class ActionExecutor:
         
         pos_diff = curr_target_pos - eef_pos
         diff_pos = np.linalg.norm(pos_diff)
-        # print(pos_diff)
+        print(pos_diff)
 
         if len(self.move_dict['trajectory']):
             eps_pos = self.eps_move_trajectory
@@ -690,8 +690,8 @@ class ActionExecutor:
                 (target_pos, eef_ori),
                 (last_pos, eef_ori),
             ]
-        print(move_trajectory)
-        exit()
+        # print(move_trajectory)
+        # exit()
         # return [(target_pos + eef_pos) / 2 + np.array([0, 0.1, 0.1]), target_pos]
         return move_trajectory
 
