@@ -2316,7 +2316,7 @@ class InferenceToolDebug:
     def _send_robot_action(self, action, obs):
         pos = obs['robot0_eef_pos']
         ori = obs['robot0_eef_quat']
-        # print(pos, ori)
+        print(pos, ori)
         des_pos = pos + action[0:3]
         # print(pos, des_pos)
         des_ori = T.quat_multiply(ori, T.axisangle2quat(action[3:6]))
