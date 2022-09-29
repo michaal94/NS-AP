@@ -1751,8 +1751,8 @@ class InferenceToolDebug:
 
         self.scene_graph_robot = self._make_scene_graph(scene_vis, poses_robot, bboxes_robot)
         
-        print(self.scene_graph_robot)
-        exit()
+        # print(self.scene_graph_robot)
+        # exit()
 
         self.environment.print_robot_configuration()
         # input()
