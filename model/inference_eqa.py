@@ -22,6 +22,8 @@ from model.program_executor import ProgramStatus, ProgramExecutor
 
 from utils.utils import CyclicBuffer
 
+from ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM
+
 class InferenceCode:
     CORRECT_ANSWER = 0
     SUCCESSFUL_TASK = 1
@@ -1729,6 +1731,12 @@ class InferenceToolDebug:
         poses, bboxes = self.pose_model.get_pose(image, observation)
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
         
+        image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
+        image.save(image_path.replace("demo", "demo_robot"))
+        print(poses, poses_robot)
+
+        exit()
+
         scene_vis = self.visual_recognition_model.get_scene(image, None, self.scene_gt)
         scene_vis_gt = self.visual_recognition_model_gt.get_scene(image, None, self.scene_gt)
         
@@ -2345,6 +2353,33 @@ class InferenceToolDebug:
 
         # time.sleep(2.0)
 
+    def _request_img_pose(self):
+        self._socket_img_pose_msg.send("scene_camera")
+        msg = self._socket_img_pose_msg.recv()
+        img = msg['image']
+        img = Image.fromarray(img)
+        objs = msg['objects']
+        names, poses, bboxes = [], [], []
+        for obj in objs:
+            names.append(COSYPOSE2NAME[obj['label']])
+            pose_cosypose = obj['pose']
+            pos_cosy, ori_cosy = pose_cosypose
+            pos = pos_cosy + COSYPOSE_TRANSFORM[obj['label']][0]
+            ori = T.quat_multiply(ori_cosy, COSYPOSE_TRANSFORM[obj['label']][1])
+            bbox_xyz = COSYPOSE_BBOX[obj['label']]
+            bbox_local = self._get_local_bounding_box(bbox_xyz)
+            bbox_local = np.concatenate(
+                (
+                    bbox_local.T,
+                    np.ones((bbox_local.shape[0], 1)).T
+                )
+            )
+            pose_mat = T.pose2mat((pos, ori))
+            bbox_world = np.matmul(pose_mat, bbox_local)
+            poses.append((pos, ori))
+            bboxes.append(bbox_world)
+        return img, names, poses, bboxes
+
     def _setup_communication(self):
         context = zmq.Context()
         self._socket_state_msg = context.socket(zmq.SUB)
@@ -2355,6 +2390,8 @@ class InferenceToolDebug:
         self._socket_gripper_control.connect("tcp://127.0.0.1:5556")
         self._socket_pose_control = context.socket(zmq.PUB)
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
+        self._socket_img_pose_msg = context.socket(zmq.REQ)
+        self._socket_img_pose_msg.connect("tcp://127.0.0.1:5556")
 
         self.gripper_msg_prev = None
 
@@ -2362,3 +2399,22 @@ class InferenceToolDebug:
         # self._socket_gripper_control.recv()
         # self._socket_gripper_control.send(b'open')
         # exit()
+
+    def _get_local_bounding_box(self, bbox):
+        bbox_wh = bbox['x'] / 2
+        bbox_dh = bbox['y'] / 2
+        bbox_h = bbox['z']
+
+        # Local bounding box w.r.t to local (0,0,0) - mid bottom
+        return np.array(
+            [
+                [ bbox_wh,  bbox_dh, 0],
+                [-bbox_wh,  bbox_dh, 0],
+                [-bbox_wh, -bbox_dh, 0],
+                [ bbox_wh, -bbox_dh, 0],
+                [ bbox_wh,  bbox_dh, bbox_h],
+                [-bbox_wh,  bbox_dh, bbox_h],
+                [-bbox_wh, -bbox_dh, bbox_h],
+                [ bbox_wh, -bbox_dh, bbox_h]
+            ]
+        )
