@@ -1732,7 +1732,8 @@ class InferenceToolDebug:
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
         
         image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-        image_robot.save('./output_shared/test.png')
+        image_robot.save('./output_shared/test_0.png')
+        counter = 1
         # print(poses, poses_robot)
 
         # exit()
@@ -1889,7 +1890,8 @@ class InferenceToolDebug:
                         poses_robot, bboxes_robot = self._align_robot_debug(
                             scene_vis, labels_robot, poses_robot, bboxes_robot 
                         )
-                        image_robot.save('./output_shared/test.png')
+                        image_robot.save(f'./output_shared/test_{counter}.png')
+                        counter += 1
                         
                         self._update_scene_graph(poses, bboxes, observation)
                         self._update_scene_graph(poses_robot, bboxes_robot, observation, robot=True)
