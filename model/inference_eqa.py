@@ -2301,7 +2301,7 @@ class InferenceToolDebug:
         ori = obs['robot0_eef_quat'] 
         # print(pos)
         # print(ori)
-        print(gripper_action, gripper_closed)
+        # print(gripper_action, gripper_closed)
         gripper_action = obs['gripper_action'] 
         gripper_closed = obs['gripper_closed'] 
         weight = obs['weight_measurement'] 
@@ -2319,10 +2319,13 @@ class InferenceToolDebug:
             gripper_action = 'close'
         else:
             gripper_action = 'open'
+    
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
-        # self._socket_pose_control.send_string(' '.join(des_pose))
-        # self._socket_gripper_control.send_string(gripper_action)
+        self._socket_pose_control.send_string(' '.join(des_pose))
+        if gripper_action != self.gripper_msg_prev:
+            self._socket_gripper_control.send_string(gripper_action)
+            self.gripper_msg_prev = gripper_action
 
     def _setup_communication(self):
         context = zmq.Context()
@@ -2333,3 +2336,5 @@ class InferenceToolDebug:
         self._socket_gripper_control.bind("tcp://127.0.0.1:5556")
         self._socket_pose_control = context.socket(zmq.PUB)
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
+
+        self.gripper_msg_prev = None
