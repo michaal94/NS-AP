@@ -1706,7 +1706,7 @@ class InferenceToolDebug:
         self.action_executor.env = self.environment
         # self.action_executor.interpolate_free_movement = True
         self.action_executor_robot.env = self.environment
-        # self.action_executor_robot.interpolate_free_movement = True
+        self.action_executor_robot.interpolate_free_movement = True
 
         self.previous_gripper_action = -1.0
         self.previous_gripper_action_robot = -1.0
