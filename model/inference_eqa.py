@@ -2322,11 +2322,12 @@ class InferenceToolDebug:
         return observation_robot
 
     def _pool_gripper_data(self, obs):
-        # msg = self._socket_state_msg.recv()
+        msg = self._socket_state_msg.recv()
         # state = pickle.loads(msg)
         # pos = state['eef_trans']
         # ori = state['eef_rot']
         # joint_state = 
+        print(msg)
 
         pos = obs['robot0_eef_pos'] 
         ori = obs['robot0_eef_quat'] 
@@ -2349,8 +2350,8 @@ class InferenceToolDebug:
             gripper_action = 'open'
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
-        self._socket_pose_control.send_string(' '.join(des_pose))
-        self._socket_gripper_control.send_string(gripper_action)
+        # self._socket_pose_control.send_string(' '.join(des_pose))
+        # self._socket_gripper_control.send_string(gripper_action)
 
     def _setup_communication(self):
         context = zmq.Context()
