@@ -2423,6 +2423,7 @@ class InferenceToolDebug:
         names, poses, bboxes = [], [], []
         for obj in objs:
             names.append(COSYPOSE2NAME[obj['label']])
+            print(names[-1])
             pose_cosypose = obj['pose']
             pos_cosy, ori_cosy = pose_cosypose
             pos = pos_cosy + COSYPOSE_TRANSFORM[obj['label']][0]
@@ -2439,10 +2440,10 @@ class InferenceToolDebug:
             )
             pose_mat = T.pose2mat((pos, ori))
             print(pose_mat)
-            exit()
             bbox_world = np.matmul(pose_mat, bbox_local)
             poses.append((pos, ori))
             bboxes.append(bbox_world[:-1, :].T)
+        exit()
         
         return img, names, poses, bboxes
 
