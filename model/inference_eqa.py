@@ -1740,11 +1740,9 @@ class InferenceToolDebug:
         scene_vis = self.visual_recognition_model.get_scene(image, None, self.scene_gt)
         scene_vis_gt = self.visual_recognition_model_gt.get_scene(image, None, self.scene_gt)
         
-        assert len(scene_vis) == len(poses_robot)
+        assert len(scene_vis) == len(poses_robot), 'Incorrect size'
 
-        poses_robot, bboxes_robot = self._align_robot_debug(
-            scene_vis, labels_robot, poses_robot, bboxes_robot 
-        )
+        poses_robot, bboxes_robot = self._align_robot_debug(scene_vis, labels_robot, poses_robot, bboxes_robot)
         # print(scene_vis)
         # exit()
 
