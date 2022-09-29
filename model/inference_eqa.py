@@ -2322,6 +2322,7 @@ class InferenceToolDebug:
         return observation_robot
 
     def _pool_gripper_data(self, obs):
+        print('waiting for msg')
         msg = self._socket_state_msg.recv()
         # state = pickle.loads(msg)
         # pos = state['eef_trans']
