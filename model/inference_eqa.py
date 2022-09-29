@@ -2359,6 +2359,7 @@ class InferenceToolDebug:
         print('msg send')
         msg = self._socket_img_pose_msg.recv()
         print('msg received')
+        msg = pickle.loads(msg)
         img = msg['image']
         img = Image.fromarray(img)
         objs = msg['objects']
