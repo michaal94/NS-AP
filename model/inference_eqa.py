@@ -2339,8 +2339,8 @@ class InferenceToolDebug:
         # exit()
         self._socket_pose_control.send_string(msg)
         if gripper_action != self.gripper_msg_prev:
-            # self._socket_gripper_control.send(gripper_action)
-            # self._socket_gripper_control.recv()
+            self._socket_gripper_control.send(gripper_action)
+            self._socket_gripper_control.recv()
             self.gripper_msg_prev = gripper_action
 
         # time.sleep(2.0)
