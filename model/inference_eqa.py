@@ -1850,7 +1850,7 @@ class InferenceToolDebug:
                         self.previous_gripper_action = action[6]
                         self.previous_gripper_action_robot = action_robot[6]
                         # print(observation['gripper_action'])
-                        print(observation['robot0_eef_quat'], observation_robot['robot0_eef_quat'])
+                        # print(observation['robot0_eef_quat'], observation_robot['robot0_eef_quat'])
                         
                     if action_executed:
                         if self.environment.blender_enabled:
@@ -2322,7 +2322,7 @@ class InferenceToolDebug:
         # print(des_pos)
         shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.103]))
         des_pos += shift_to_wrist 
-        # print(des_pos)
+        print(des_pos)
         if action[6] > 0:
             gripper_action = b'close'
         else:
@@ -2330,7 +2330,7 @@ class InferenceToolDebug:
     
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
-        # print(list(des_pose))
+        print(list(des_pose))
         # exit()
         self._socket_pose_control.send_string(' '.join(des_pose))
         if gripper_action != self.gripper_msg_prev:
