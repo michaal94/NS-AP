@@ -2321,6 +2321,8 @@ class InferenceToolDebug:
         # print(pos, des_pos)
         des_ori = T.quat_multiply(ori, T.axisangle2quat(action[3:6]))
         # print(des_pos)
+        if all([des_ori[i] < 0 for i in range(3)]):
+            des_ori = - des_ori
         shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.103]))
         des_pos += shift_to_wrist 
         # print(des_pos)
@@ -2332,7 +2334,7 @@ class InferenceToolDebug:
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
         msg = ' '.join(des_pose)
-        print(msg)
+        # print(msg)
         # exit()
         self._socket_pose_control.send_string(msg)
         if gripper_action != self.gripper_msg_prev:
