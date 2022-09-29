@@ -2317,7 +2317,7 @@ class InferenceToolDebug:
         ori = obs['robot0_eef_quat']
         # print(pos, ori)
         des_pos = pos + action[0:3]
-        # print(pos, des_pos)
+        print(pos, des_pos)
         des_ori = T.quat_multiply(ori, T.axisangle2quat(action[3:6]))
         # print(des_pos)
         shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.103]))
