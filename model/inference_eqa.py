@@ -2321,9 +2321,9 @@ class InferenceToolDebug:
         shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.103]))
         des_pos += shift_to_wrist 
         if action[6] > 0:
-            gripper_action = 'close'
+            gripper_action = b'close'
         else:
-            gripper_action = 'open'
+            gripper_action = b'open'
     
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
@@ -2331,7 +2331,7 @@ class InferenceToolDebug:
         # exit()
         self._socket_pose_control.send_string(' '.join(des_pose))
         if gripper_action != self.gripper_msg_prev:
-            self._socket_gripper_control.send_string(gripper_action)
+            self._socket_gripper_control.send(gripper_action)
             self.gripper_msg_prev = gripper_action
 
         # time.sleep(2.0)
