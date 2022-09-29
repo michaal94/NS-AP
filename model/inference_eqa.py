@@ -1732,7 +1732,7 @@ class InferenceToolDebug:
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
         
         image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-        image.save(image_path.replace("demo", "demo_robot"))
+        image.save('./output_shared/test.png')
         print(poses, poses_robot)
 
         exit()
