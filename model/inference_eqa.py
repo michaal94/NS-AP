@@ -2352,4 +2352,5 @@ class InferenceToolDebug:
         self.gripper_msg_prev = None
 
         self._socket_gripper_control.send(b'close')
+        self._socket_gripper_control.send(b'open')
         exit()
