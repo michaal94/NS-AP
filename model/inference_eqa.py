@@ -1847,7 +1847,7 @@ class InferenceToolDebug:
                         observation_robot = self._get_observation_robot(observation)
                         self.previous_gripper_action = action[6]
                         self.previous_gripper_action_robot = action_robot[6]
-                        print(observation['gripper_action'])
+                        # print(observation['gripper_action'])
                     if action_executed:
                         if self.environment.blender_enabled:
                             image_path = self.environment.blender_render()
