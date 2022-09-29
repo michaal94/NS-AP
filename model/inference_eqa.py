@@ -1753,7 +1753,7 @@ class InferenceToolDebug:
         
         print(self.scene_graph)
         print(self.scene_graph_robot)
-        exit()
+        # exit()
 
         self.environment.print_robot_configuration()
         # input()
@@ -2438,7 +2438,7 @@ class InferenceToolDebug:
             pose_mat = T.pose2mat((pos, ori))
             bbox_world = np.matmul(pose_mat, bbox_local)
             poses.append((pos, ori))
-            bboxes.append(bbox_world)
+            bboxes.append(bbox_world[:-1, :].T)
         return img, names, poses, bboxes
 
     def _setup_communication(self):
