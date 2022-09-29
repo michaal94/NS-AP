@@ -2324,14 +2324,18 @@ class InferenceToolDebug:
     def _pool_gripper_data(self, obs):
         print('waiting for msg')
         msg = self._socket_state_msg.recv()
-        # state = pickle.loads(msg)
-        # pos = state['eef_trans']
-        # ori = state['eef_rot']
+        state = pickle.loads(msg)
+        pos = state['eef_trans']
+        ori = state['eef_rot']
         # joint_state = 
-        print(msg)
+        print(state)
+        print(pos)
+        print(ori)
 
         pos = obs['robot0_eef_pos'] 
         ori = obs['robot0_eef_quat'] 
+        print(pos)
+        print(ori)
         gripper_action = obs['gripper_action'] 
         gripper_closed = obs['gripper_closed'] 
         weight = obs['weight_measurement'] 
