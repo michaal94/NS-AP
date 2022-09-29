@@ -1754,7 +1754,7 @@ class InferenceToolDebug:
             # self.scene_graph[3]['weight'] = np.array(163.4)
             program_output = self.program_executor.execute(self.scene_graph, program_list)
             self.loop_detector.flush()
-
+            input()
             print(program_output)
             # print(sce)
             # exit()
@@ -2330,10 +2330,10 @@ class InferenceToolDebug:
         des_pose = map(lambda x: '%.6f' % x, des_pose)
         # print(list(des_pose))
         # exit()
-        self._socket_pose_control.send_string(' '.join(des_pose))
+        # self._socket_pose_control.send_string(' '.join(des_pose))
         if gripper_action != self.gripper_msg_prev:
-            self._socket_gripper_control.send(gripper_action)
-            self._socket_gripper_control.recv()
+            # self._socket_gripper_control.send(gripper_action)
+            # self._socket_gripper_control.recv()
             self.gripper_msg_prev = gripper_action
 
         # time.sleep(2.0)
