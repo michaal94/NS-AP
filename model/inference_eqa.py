@@ -2,6 +2,7 @@ import os
 import json
 import copy
 import pickle
+import time
 import numpy as np
 
 import zmq
@@ -1819,7 +1820,7 @@ class InferenceToolDebug:
                     action_executed = False
                     # action_executed_robot = False
                     for _ in range(self.env_timeout):
-                        # print(self.action_executor.get_current_action(), self.action_executor_robot.get_current_action())
+                        print(self.action_executor.get_current_action(), self.action_executor_robot.get_current_action())
                         if self.action_executor.get_current_action() or self.action_executor_robot.get_current_action():
                             if self.action_executor.get_current_action():
                                 action = self.action_executor.step(observation)
@@ -2297,13 +2298,13 @@ class InferenceToolDebug:
         # print(pos)
         # print(ori)
 
-        pos = obs['robot0_eef_pos'] 
-        ori = obs['robot0_eef_quat'] 
+        # pos = obs['robot0_eef_pos'] 
+        # ori = obs['robot0_eef_quat'] 
         # print(pos)
         # print(ori)
         # print(gripper_action, gripper_closed)
-        gripper_action = obs['gripper_action'] 
-        gripper_closed = obs['gripper_closed'] 
+        # gripper_action = obs['gripper_action'] 
+        # gripper_closed = obs['gripper_closed'] 
         weight = obs['weight_measurement'] 
 
         return pos, ori, gripper_action, gripper_closed, weight
@@ -2326,6 +2327,8 @@ class InferenceToolDebug:
         if gripper_action != self.gripper_msg_prev:
             self._socket_gripper_control.send_string(gripper_action)
             self.gripper_msg_prev = gripper_action
+
+        time.sleep(2.0)
 
     def _setup_communication(self):
         context = zmq.Context()
