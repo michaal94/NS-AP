@@ -2316,7 +2316,6 @@ class InferenceToolDebug:
         # print(pos, ori)
         des_pos = pos + action[0:3]
         print(pos, des_pos)
-        exit()
         des_ori = T.quat_multiply(ori, T.axisangle2quat(action[3:6]))
         # print(des_pos)
         if action[6] > 0:
@@ -2326,6 +2325,8 @@ class InferenceToolDebug:
     
         des_pose = des_pos.tolist() + des_ori.tolist()
         des_pose = map(lambda x: '%.6f' % x, des_pose)
+        print(des_pose)
+        exit()
         self._socket_pose_control.send_string(' '.join(des_pose))
         if gripper_action != self.gripper_msg_prev:
             self._socket_gripper_control.send_string(gripper_action)
