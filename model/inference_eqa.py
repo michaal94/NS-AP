@@ -2354,7 +2354,7 @@ class InferenceToolDebug:
         # time.sleep(2.0)
 
     def _request_img_pose(self):
-        self._socket_img_pose_msg.send("scene_camera")
+        self._socket_img_pose_msg.send_string("scene_camera")
         msg = self._socket_img_pose_msg.recv()
         img = msg['image']
         img = Image.fromarray(img)
