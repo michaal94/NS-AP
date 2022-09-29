@@ -2333,6 +2333,7 @@ class InferenceToolDebug:
         self._socket_pose_control.send_string(' '.join(des_pose))
         if gripper_action != self.gripper_msg_prev:
             self._socket_gripper_control.send(gripper_action)
+            self._socket_gripper_control.recv()
             self.gripper_msg_prev = gripper_action
 
         # time.sleep(2.0)
@@ -2349,3 +2350,6 @@ class InferenceToolDebug:
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
 
         self.gripper_msg_prev = None
+
+        self._socket_gripper_control.send(b'close')
+        exit()
