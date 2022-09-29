@@ -2482,7 +2482,7 @@ class InferenceToolDebug:
         )
 
     def _align_robot_debug(self, scene, labels, poses, bboxes):
-        p_aligned, bb_aligned = []
+        p_aligned, bb_aligned = [], []
         for o in scene:
             name = o['name']
             idx = labels.index(name)
