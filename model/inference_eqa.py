@@ -2393,7 +2393,7 @@ class InferenceToolDebug:
         self._socket_pose_control = context.socket(zmq.PUB)
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
         self._socket_img_pose_msg = context.socket(zmq.REQ)
-        self._socket_img_pose_msg.connect("tcp://127.0.0.1:5556")
+        self._socket_img_pose_msg.connect("tcp://127.0.0.1:5558")
 
         self.gripper_msg_prev = None
 
