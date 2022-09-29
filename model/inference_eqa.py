@@ -2270,8 +2270,8 @@ class InferenceToolDebug:
     def _pool_gripper_data(self, obs):
         msg = self._socket_state_msg.recv()
         state = pickle.loads(msg)
-        pos = state['eef_trans']
-        ori = state['eef_rot']
+        pos = np.array(state['eef_trans'])
+        ori = np.array(state['eef_rot'])
         joint_state = state['joint_states']
         finger1_pos = joint_state['position'][-2]
         finger2_pos = joint_state['position'][-1]
