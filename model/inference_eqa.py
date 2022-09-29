@@ -2334,7 +2334,7 @@ class InferenceToolDebug:
             self._socket_gripper_control.send_string(gripper_action)
             self.gripper_msg_prev = gripper_action
 
-        time.sleep(2.0)
+        # time.sleep(2.0)
 
     def _setup_communication(self):
         context = zmq.Context()
