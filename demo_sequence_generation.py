@@ -13,7 +13,7 @@ else:
 
 import json
 import argparse
-from model.inference_eqa import InferenceTool, InferenceCode
+from model.inference_eqa import InferenceToolDebug, InferenceCode
 from utils.utils import extract_args
 
 parser = argparse.ArgumentParser()
@@ -115,7 +115,7 @@ def main(args):
     with open(scene_json, 'r') as f:
         scene = json.load(f)
 
-    inference_tool = InferenceTool()
+    inference_tool = InferenceToolDebug()
     inference_tool.setup(
         instruction_model_params=instruction_model_params,
         visual_recognition_model_params=visual_recognition_model_params,

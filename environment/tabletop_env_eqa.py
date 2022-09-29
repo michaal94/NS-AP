@@ -252,7 +252,7 @@ class TabletopEnv(SingleArmEnv):
         Loads an xml model, puts it in self.model
         """
         self.robot_configs[0]['initial_qpos'] = np.array(
-            [0.0, 0.0, 0.0, - 3 * np.pi / 4.0, 0.00, 3 * np.pi / 4, np.pi / 4]
+            [0.0, -np.pi / 4, 0.0, - 3 * np.pi / 4.0, 0.00, 2 * np.pi / 4, np.pi / 4]
         )
 
 

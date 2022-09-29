@@ -3,6 +3,17 @@ import numpy as np
 import robosuite.utils.transform_utils as T
 from utils.utils import CyclicBuffer
 
+YCBObjectList = [
+    'mustard bottle',
+    'bleach cleanser'
+]
+
+
+YCB_OFFSETS = {
+    'mustard bottle': np.array([0.0, 0.0, 0.0]),
+    'bleach cleanser': np.array([0.009209, 0.0, 0.0])
+}
+
 class ActionExecutor:
     def __init__(
         self,
@@ -39,6 +50,7 @@ class ActionExecutor:
         self.interp_angle = np.pi / 15
         self.interp_dist = 0.05
         self.max_interp = 0
+        self.interpolate_free_movement = False
 
     def set_action(self, action, target, obs, scene):
         self.action = action
@@ -450,11 +462,14 @@ class ActionExecutor:
         
         pos_diff = curr_target_pos - eef_pos
         diff_pos = np.linalg.norm(pos_diff)
+        # print(pos_diff)
+
         if len(self.move_dict['trajectory']):
             eps_pos = self.eps_move_trajectory
         else:
             eps_pos = self.eps_move_end
 
+        # print(diff_pos, eps_pos)
         ori_diff = T.get_orientation_error(curr_target_ori, eef_ori)
 
         quat_diff = T.quat_inverse(eef_ori)
@@ -649,11 +664,32 @@ class ActionExecutor:
                 travel_height
             ]
         )
-        move_trajectory = [
-            (intermediate_pos, eef_ori),
-            (target_pos, eef_ori),
-            (last_pos, eef_ori),
-        ]
+        if self.interpolate_free_movement:
+            move_trajectory = []
+            interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], intermediate_pos, self.interp_dist)
+            for p in interp_pos:
+                move_trajectory.append((
+                p.copy(), eef_ori
+            ))
+            move_trajectory.append((intermediate_pos, eef_ori))
+            interp_pos = self._get_dist_interp(intermediate_pos, target_pos, self.interp_dist)
+            for p in interp_pos:
+                move_trajectory.append((
+                p.copy(), eef_ori
+            ))
+            move_trajectory.append((target_pos, eef_ori))
+            interp_pos = self._get_dist_interp(target_pos, last_pos, self.interp_dist)
+            for p in interp_pos:
+                move_trajectory.append((
+                p.copy(), eef_ori
+            ))
+            move_trajectory.append((last_pos, eef_ori))
+        else:
+            move_trajectory = [
+                (intermediate_pos, eef_ori),
+                (target_pos, eef_ori),
+                (last_pos, eef_ori),
+            ]
         # return [(target_pos + eef_pos) / 2 + np.array([0, 0.1, 0.1]), target_pos]
         return move_trajectory
 
@@ -716,11 +752,16 @@ class ActionExecutor:
             self._set_approach_rant(target, obs, scene)
         elif 'pan' in target_name:
             self._set_approach_top_handle(target, obs, scene)
-        elif 'mustard bottle' in target_name:
-            self._set_approach_cylinder(target, obs, scene)
-        elif 'bleach cleanser' in target_name:
-            self._set_approach_cylinder(target, obs, scene)
+        elif target_name in YCBObjectList:
+            self._set_approach_ycb(target, obs, scene)
         self.gripper_dir = -1.0
+
+    def _set_approach_ycb(self, target, obs, scene):
+        target_name = scene[target]['name']
+        if 'mustard bottle' in target_name:
+            self._set_approach_ycb_bottle(target, obs, scene)
+        elif 'bleach cleanser' in target_name:
+            self._set_approach_ycb_bottle(target, obs, scene)
     
     def _set_approach_cylinder(self, target, obs, scene):
         self.move_dict = {}
@@ -880,7 +921,174 @@ class ActionExecutor:
                 target_pos.copy(), target_quat.copy()
             ))
         self.move_dict['current_target'] = self.move_dict['trajectory'].pop(0)
+        # print(self.move_dict['trajectory'][-1][0], scene[0]['pos'])
+        # exit()
 
+    def _set_approach_ycb_bottle(self, target, obs, scene):
+        target_name = scene[target]['name']
+        self.move_dict = {}
+        obj_ori = scene[target]['ori']
+        # Check standing vs lying
+        obj_z_dir = T.quat2mat(obj_ori)[:, 2]
+        angle_to_up = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
+        if angle_to_up > self.angle_up_tolerance:
+            # Lying
+            # First gripper to upward position
+            target_quat = self._get_closest_downward(obs[f'robot0_eef_quat'])
+            self.move_dict['trajectory'] = []
+            in_between_quat = self._get_quat_interp(
+                obs[f'robot0_eef_quat'],
+                target_quat,
+                angle = self.interp_angle
+            )
+            for q in in_between_quat:
+                self.move_dict['trajectory'].append((
+                    obs['robot0_eef_pos'], q.copy()
+                ))
+            
+            # Target orientation
+            gripper_x_dir = obj_z_dir.copy()
+            angle_to_floor = np.abs(90 - np.abs(np.rad2deg(angle_to_up)))
+            gripper_x_on_floor = np.array(
+                [gripper_x_dir[0], 
+                gripper_x_dir[1],
+                0]
+            )
+            gripper_x_on_floor = self._unit_vector(gripper_x_on_floor)
+            if angle_to_floor < 20:
+                # Keep gripper vertical
+                target_x = gripper_x_on_floor
+            else:
+                target_x = gripper_x_dir
+            target_y = np.cross(np.array([0, 0, -1]), gripper_x_on_floor)
+            target_y = self._unit_vector(target_y)
+            target_z = np.cross(target_x, target_y)
+            target_z = self._unit_vector(target_z)
+            target_mat = np.zeros((3, 3))
+            target_mat[:, 0] = target_x
+            target_mat[:, 1] = target_y
+            target_mat[:, 2] = target_z
+            target_quat = T.mat2quat(target_mat)
+
+            in_between_quat = self._get_quat_interp(
+                obs[f'robot0_eef_quat'],
+                target_quat,
+                angle = self.interp_angle
+            )
+            for q in in_between_quat:
+                self.move_dict['trajectory'].append((
+                    obs['robot0_eef_pos'], q.copy()
+                ))
+
+            self.move_dict['trajectory'].append(
+                (obs['robot0_eef_pos'], target_quat.copy())
+            )            
+
+            # Target position with vert offset
+            # Start with bbox centre
+            bbox = scene[target]['bbox']
+            target_pos = np.mean(bbox, 0)
+
+            target_pos[2] = target_pos[2] - self.gripper_pad_height
+            target_pos[2] = max(target_pos[2], 0.005)
+
+            target_to_gripper_vec = -target_z
+            t = (obs['robot0_eef_pos'][2] - target_pos[2]) / target_to_gripper_vec[2]
+            init_pos = target_pos + target_to_gripper_vec * t
+            diff = target_pos - init_pos
+            for i in range(3):
+                self.move_dict['trajectory'].append(
+                    (init_pos + (i * diff) / 3, target_quat.copy())
+                )            
+            self.move_dict['trajectory'].append(
+                (target_pos, target_quat.copy())
+            )            
+        else:
+            # Standing
+            # First gripper to upward position
+            target_quat = self._get_closest_downward(obs[f'robot0_eef_quat'])
+            self.move_dict['trajectory'] = []
+            in_between_quat = self._get_quat_interp(
+                obs[f'robot0_eef_quat'],
+                target_quat,
+                angle = self.interp_angle
+            )
+            for q in in_between_quat:
+                self.move_dict['trajectory'].append((
+                    obs['robot0_eef_pos'], q.copy()
+                ))
+            bbox = scene[target]['bbox']
+            y_size = np.linalg.norm((bbox[0] - bbox[3]))
+            x_size = np.linalg.norm((bbox[0] - bbox[1]))
+            target_pos = scene[target]['pos'].copy()
+            obj_mat = T.quat2mat(obj_ori)
+            obj_y_dir = obj_mat[:, 1]
+            obj_x_dir = obj_mat[:, 0]
+            gripper_mat = T.quat2mat(obs[f'robot0_eef_quat'])
+            gripper_mat = T.quat2mat(target_quat)
+            gripper_y_dir = gripper_mat[:, 1]
+            angle_between = self._angle_between(gripper_y_dir, obj_y_dir)
+            if angle_between > np.pi:
+                angle_between = 2 * np.pi - angle_between
+            if angle_between > np.pi / 2:
+                target_y = - obj_y_dir
+            else:
+                target_y = obj_y_dir
+            target_y = self._unit_vector(target_y)
+            target_z = np.array([0, 0, -1])
+            target_x = np.cross(target_y, target_z)
+            target_x = self._unit_vector(target_x)
+            target_mat = np.zeros((3, 3))
+            target_mat[:, 0] = target_x
+            target_mat[:, 1] = target_y
+            target_mat[:, 2] = target_z
+            target_quat = T.mat2quat(target_mat)
+            # target_pos = target_pos + (x_size - y_size) * obj_x_dir / 2
+
+            in_between_quat = self._get_quat_interp(
+                obs[f'robot0_eef_quat'],
+                target_quat,
+                angle = self.interp_angle
+            )
+            for q in in_between_quat:
+                self.move_dict['trajectory'].append((
+                    obs['robot0_eef_pos'], q.copy()
+                ))
+
+            self.move_dict['trajectory'].append((
+                obs['robot0_eef_pos'], target_quat.copy()
+            ))
+            z_coord = bbox[:, 2]
+            z_coord = np.max(z_coord) + self.move_clearance
+            target_pos[2] = z_coord
+            # print(target_pos)
+            target_pos += np.matmul(obj_mat, YCB_OFFSETS[target_name])
+            # print(target_pos)
+
+            # print(target_pos, obj_mat, YCB_OFFSETS[target_name])
+            # exit()
+
+            interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
+            for p in interp_pos:
+                self.move_dict['trajectory'].append((
+                p.copy(), target_quat.copy()
+            ))
+
+            self.move_dict['trajectory'].append((
+                target_pos.copy(), target_quat.copy()
+            ))
+            # print()
+            target_pos[2] = max(np.max(bbox[:, 2]) - self.grasp_depth, 0.005)
+            interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
+            for p in interp_pos:
+                self.move_dict['trajectory'].append((
+                p.copy(), target_quat.copy()
+            ))
+
+            self.move_dict['trajectory'].append((
+                target_pos.copy(), target_quat.copy()
+            ))
+        self.move_dict['current_target'] = self.move_dict['trajectory'].pop(0)
 
     def _set_approach_rant(self, target, obs, scene):
         self.move_dict = {}
