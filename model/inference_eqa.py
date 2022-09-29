@@ -2423,12 +2423,12 @@ class InferenceToolDebug:
         names, poses, bboxes = [], [], []
         for obj in objs:
             names.append(COSYPOSE2NAME[obj['label']])
-            print(names[-1])
+            # print(names[-1])
             pose_cosypose = obj['pose']
             pos_cosy, ori_cosy = pose_cosypose
             pos = pos_cosy + COSYPOSE_TRANSFORM[obj['label']][0]
             ori = T.quat_multiply(ori_cosy, COSYPOSE_TRANSFORM[obj['label']][1])
-            print(ori_cosy, ori)
+            # print(ori_cosy, ori)
 
             bbox_xyz = COSYPOSE_BBOX[obj['label']]
             bbox_local = self._get_local_bounding_box(bbox_xyz)
@@ -2439,11 +2439,11 @@ class InferenceToolDebug:
                 )
             )
             pose_mat = T.pose2mat((pos, ori))
-            print(pose_mat)
+            # print(pose_mat)
             bbox_world = np.matmul(pose_mat, bbox_local)
             poses.append((pos, ori))
             bboxes.append(bbox_world[:-1, :].T)
-        exit()
+        # exit()
         
         return img, names, poses, bboxes
 
