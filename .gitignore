@@ -133,4 +133,5 @@ dmypy.json
 
 # Custom
 output/
+output_shared/
 test/
