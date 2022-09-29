@@ -1707,6 +1707,9 @@ class InferenceToolDebug:
         self.action_executor_robot.env = self.environment
         # self.action_executor_robot.interpolate_free_movement = True
 
+        self.previous_gripper_action = -1.0
+        self.previous_gripper_action_robot = -1.0
+
         # Get first image
         if self.environment.blender_enabled:
             image_path = self.environment.blender_render()
@@ -1783,28 +1786,11 @@ class InferenceToolDebug:
                         program_output['ACTION'],
                         self.scene_graph 
                     )
-                    # print(self.scene_graph[1]['in_hand'])
-                    # print(self.scene_graph[1]['raised'])
-                    # print(self.scene_graph[1]['approached'])
-                    # print(self.scene_graph[1]['gripper_over'])
-                    # print(self.scene_graph[1]['pos'])
-                    # print(self.scene_graph[1]['bbox'])
-                    # print(self.scene_graph[2]['in_hand'])
-                    # print(self.scene_graph[2]['raised'])
-                    # print(self.scene_graph[2]['approached'])
-                    # print(self.scene_graph[2]['gripper_over'])
-                    # print(self.scene_graph[2]['pos'])
-                    # print(self.scene_graph[2]['bbox'])
-                    # print(observation['gripper_closed'])
-                    # print(observation['gripper_action'])
                     print(action_plan)
                     if self._detect_loop(action_plan):
                         print('Loop detected, exiting')
                         return InferenceCode.LOOP_ERROR
                     self.loop_detector.append(action_plan)
-                    # input()
-                    # exit()
-                    # input()
                     if len(action_plan) == 0:
                         if program_status == ProgramStatus.ACTION:
                             break
@@ -1839,13 +1825,13 @@ class InferenceToolDebug:
                                 action = self.action_executor.step(observation)
                             else:
                                 action = self.default_environment_action
-                                action[6] = 1.0
+                                action[6] = self.previous_gripper_action
                             if self.action_executor_robot.get_current_action():
                                 action_robot = self.action_executor_robot.step(observation_robot)
 
                             else:
                                 action_robot = self.default_environment_action
-                                action_robot[6] = 1.0
+                                action_robot[6] = self.previous_gripper_action_robot
                         else:
                             action_executed = True
                             break
@@ -1859,8 +1845,9 @@ class InferenceToolDebug:
                                 self.environment.render()
 
                         observation_robot = self._get_observation_robot(observation)
-
-                        
+                        self.previous_gripper_action = action[6]
+                        self.previous_gripper_action_robot = action_robot[6]
+                    print(observation['gripper_action'])
                     if action_executed:
                         if self.environment.blender_enabled:
                             image_path = self.environment.blender_render()
@@ -1882,48 +1869,6 @@ class InferenceToolDebug:
 
         print("Timeout, program execution reiterations exceeded.")
         return InferenceCode.TIMEOUT
-
-        # assert self.pose_model is not None, "Load pose estimation model (or set GT pose mode) before running inference"
-
-        # default_action = self._get_default_action()
-        # for i in range(100):
-        #     self.environment.step(default_action)
-        #     if self.blender_rendering:
-        #         self.environment.blender_render()
-        #     else:
-        #         self.environment.render()
-
-        '''
-        + Get program from instruction
-        + Setup environment
-        + Get first image
-        + Get first poses
-        + Get visual recognition
-        + Associate semantic and geometric graphs
-        while before timeout:
-            Get program output on the scene graph
-            if failure:
-                exit
-            if success:
-                check answer and exit
-            if action or action_final:
-                for all tasks: 
-                    Loop:       
-                        if no action happening:
-                            Check last reward - check if success 
-                            Check last observations (eef pos and ori)
-                            Get image
-                            Get poses
-                            align new poses with old ones (assign to proper graph nodes)
-                            update_scene_graph
-                            get primitive list
-                            set current action in actionexecutor to primitives[0]
-                        else:
-                            action.step()
-                        env.step()
-                if action_final:
-                    check last status and exit
-        '''
 
     # def _load_scene(self, scene):
     #     assert 'objects' in scene
@@ -2322,20 +2267,31 @@ class InferenceToolDebug:
         return observation_robot
 
     def _pool_gripper_data(self, obs):
-        print('waiting for msg')
         msg = self._socket_state_msg.recv()
         state = pickle.loads(msg)
         pos = state['eef_trans']
         ori = state['eef_rot']
+        joint_state = state['joint_states']
+        finger1_pos = joint_state['position'][-2]
+        finger2_pos = joint_state['position'][-1]
+        finger1_vel = joint_state['velocity'][-2]
+        finger2_vel = joint_state['velocity'][-1]
+        if finger1_pos < 0.039 and finger2_pos < 0.039:
+            gripper_closed = True
+        if finger1_vel > 0.001 and finger2_vel > 0.001:
+            gripper_action = -1.0
+        else:
+            gripper_action = 1.0
+
         # joint_state = 
-        print(state)
-        print(pos)
-        print(ori)
+        # print(state)
+        # print(pos)
+        # print(ori)
 
         pos = obs['robot0_eef_pos'] 
         ori = obs['robot0_eef_quat'] 
-        print(pos)
-        print(ori)
+        # print(pos)
+        # print(ori)
         gripper_action = obs['gripper_action'] 
         gripper_closed = obs['gripper_closed'] 
         weight = obs['weight_measurement'] 
