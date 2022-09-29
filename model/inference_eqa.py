@@ -2486,3 +2486,4 @@ class InferenceToolDebug:
             idx = labels.index(name)
             p_aligned.append(poses[idx])
             bb_aligned.append(bboxes[idx])
+        return p_aligned, bb_aligned
