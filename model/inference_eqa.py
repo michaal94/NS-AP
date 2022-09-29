@@ -2301,6 +2301,7 @@ class InferenceToolDebug:
         ori = obs['robot0_eef_quat'] 
         # print(pos)
         # print(ori)
+        print(gripper_action, gripper_closed)
         gripper_action = obs['gripper_action'] 
         gripper_closed = obs['gripper_closed'] 
         weight = obs['weight_measurement'] 
