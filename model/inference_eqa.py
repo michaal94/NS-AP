@@ -2358,7 +2358,7 @@ class InferenceToolDebug:
         context = zmq.Context()
         self._socket_state_msg = context.socket(zmq.SUB)
         self._socket_state_msg.setsockopt(zmq.SUBSCRIBE, b'')
-        self._socket_state_msg.bind("tcp://127.0.0.1:5555")
+        self._socket_state_msg.connect("tcp://127.0.0.1:5555")
         self._socket_gripper_control = context.socket(zmq.PUB)
         self._socket_gripper_control.bind("tcp://127.0.0.1:5556")
         self._socket_pose_control = context.socket(zmq.PUB)
