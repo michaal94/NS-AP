@@ -1708,6 +1708,7 @@ class InferenceToolDebug:
         self.action_executor_robot.env = self.environment
         self.action_executor_robot.interpolate_free_movement = True
         self.action_executor_robot.decouple = False
+        self.action_executor_robot.eps_move_l1_ori = np.pi / 45
 
         self.previous_gripper_action = -1.0
         self.previous_gripper_action_robot = -1.0
