@@ -1740,11 +1740,21 @@ class InferenceToolDebug:
         scene_vis = self.visual_recognition_model.get_scene(image, None, self.scene_gt)
         scene_vis_gt = self.visual_recognition_model_gt.get_scene(image, None, self.scene_gt)
         
-        print(scene_vis)
-        exit()
+        assert len(scene_vis) == len(poses_robot)
+
+        poses_robot, bboxes_robot = self._align_robot_debug(
+            scene_vis, labels_robot, poses_robot, bboxes_robot 
+        )
+        # print(scene_vis)
+        # exit()
 
         self.scene_graph = self._make_scene_graph(scene_vis, poses, bboxes)
         self.scene_graph_gt = self._make_scene_graph(scene_vis_gt, poses_gt, bboxes_gt)
+
+        self.scene_graph_robot = self._make_scene_graph(scene_vis, poses_robot, bboxes_robot)
+        
+        print(self.scene_graph_robot)
+        exit()
 
         self.environment.print_robot_configuration()
         # input()
@@ -1798,9 +1808,13 @@ class InferenceToolDebug:
                     # self.scene_graph[2]['raised'] = True
                     action_plan = self.action_planner.get_action_sequence(
                         program_output['ACTION'],
-                        self.scene_graph 
+                        self.scene_graph
                     )
-                    print(action_plan)
+                    action_plan_robot = self.action_planner.get_action_sequence(
+                        program_output['ACTION'],
+                        self.scene_graph
+                    )
+                    print(action_plan, action_plan_robot)
                     if self._detect_loop(action_plan):
                         print('Loop detected, exiting')
                         return InferenceCode.LOOP_ERROR
@@ -1828,7 +1842,7 @@ class InferenceToolDebug:
                         action_to_execute[0], 
                         action_to_execute[1],
                         observation_robot,
-                        self.scene_graph
+                        self.scene_graph_robot
                     )
                     action_executed = False
                     # action_executed_robot = False
@@ -1872,7 +1886,14 @@ class InferenceToolDebug:
                             image = self._load_image(image_path)
                         poses, bboxes = self.pose_model.get_pose(image, observation)
                         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
+                        image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
+                        poses_robot, bboxes_robot = self._align_robot_debug(
+                            scene_vis, labels_robot, poses_robot, bboxes_robot 
+                        )
+                        image_robot.save('./output_shared/test.png')
+                        
                         self._update_scene_graph(poses, bboxes, observation)
+                        self._update_scene_graph(poses_robot, bboxes_robot, observation, robot=True)
                         self._update_scene_graph(poses_gt, bboxes_gt, observation, gt=True)
                         if not self._check_gt_scene():
                             print("Broken scene error")
@@ -1891,7 +1912,7 @@ class InferenceToolDebug:
     #     assert 'objects' in scene
     #     self.scene = scene
 
-    def _update_scene_graph(self, poses, bboxes, obs, gt=False):
+    def _update_scene_graph(self, poses, bboxes, obs, gt=False, robot=False):
         if gt:
             for i in range(len(self.scene_graph_gt)):
                 self.scene_graph_gt[i]['pos'] = poses[i][0]
@@ -1924,6 +1945,40 @@ class InferenceToolDebug:
                     obj['raised'] = True
                     if obs['grasped_obj_idx'] == idx:
                         obj['weight'] = obs['weight_measurement']
+        elif robot:
+            #TODO
+            # Do the pose matching w.r.t history
+            for i in range(len(self.scene_graph_robot)):
+                self.scene_graph_robot[i]['pos'] = poses[i][0]
+                self.scene_graph_robot[i]['ori'] = poses[i][1]
+                self.scene_graph_robot[i]['bbox'] = bboxes[i]
+            eef_pos = obs['robot0_eef_pos']
+            eef_ori = obs['robot0_eef_quat']
+            gripper_closed = obs['gripper_closed']
+            gripper_action = obs['gripper_action']
+            # print(obs)
+            # Iterate again cause ultimately there will be matching 
+            for obj in self.scene_graph_robot:
+                obj['in_hand'] = False
+                obj['raised'] = False
+                obj['approached'] = False
+                obj['gripper_over'] = False
+                bbox_boundaries = self._check_eef_in_bbox(obj, eef_pos)
+                finger_in_bbox = self._check_finger_in_bbox(obj, eef_pos, eef_ori)
+                # print(bbox_boundaries)
+                # print(gripper_closed)
+                # print(gripper_action)
+                if len(bbox_boundaries) == 3 or finger_in_bbox:
+                    if gripper_closed and gripper_action > -0.99:
+                        obj['in_hand'] = True
+                    else:
+                        obj['approached'] = True
+                elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                    obj['gripper_over'] = True
+                if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
+                    obj['raised'] = True
+                if obj['raised'] and obj['in_hand']:
+                    obj['weight'] = obs['weight_measurement']
         else:
             #TODO
             # Do the pose matching w.r.t history
@@ -2425,3 +2480,11 @@ class InferenceToolDebug:
                 [ bbox_wh, -bbox_dh, bbox_h]
             ]
         )
+
+    def _align_robot_debug(self, scene, labels, poses, bboxes):
+        p_aligned, bb_aligned = []
+        for o in scene:
+            name = o['name']
+            idx = labels.index(name)
+            p_aligned.append(poses[idx])
+            bb_aligned.append(bboxes[idx])
