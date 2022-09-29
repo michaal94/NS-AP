@@ -456,7 +456,7 @@ class ActionExecutor:
         curr_target_pos = self.move_dict['current_target'][0]
         curr_target_ori = self.move_dict['current_target'][1]
         curr_target_ori = self._unit_vector(curr_target_ori)
-        print(eef_pos, curr_target_pos)
+        # print(eef_pos, curr_target_pos)
         # Debug
         self.env.sim.model.body_pos[self.env.debug_obj_body_id[self.env.debug_objs[1].name]] = curr_target_pos
         self.env.sim.model.body_quat[self.env.debug_obj_body_id[self.env.debug_objs[1].name]] = T.convert_quat(curr_target_ori, to='wxyz')
@@ -520,7 +520,7 @@ class ActionExecutor:
         #     self.max_interp = len(self.move_dict['trajectory'])
         #     print(self.max_interp)
         # print(len(self.move_dict['trajectory']))
-        print(diff_pos, eps_pos, diff_ori, eps_ori)
+        # print(diff_pos, eps_pos, diff_ori, eps_ori)
         if self.delta_control:
             if diff_pos < eps_pos and diff_ori < eps_ori:
                 # print('both good')
@@ -694,7 +694,7 @@ class ActionExecutor:
                 (target_pos, eef_ori),
                 (last_pos, eef_ori),
             ]
-        # print(move_trajectory)
+        print(move_trajectory)
         # exit()
         # return [(target_pos + eef_pos) / 2 + np.array([0, 0.1, 0.1]), target_pos]
         return move_trajectory
