@@ -1754,7 +1754,7 @@ class InferenceToolDebug:
             # self.scene_graph[3]['weight'] = np.array(163.4)
             program_output = self.program_executor.execute(self.scene_graph, program_list)
             self.loop_detector.flush()
-            input()
+            # input()
             print(program_output)
             # print(sce)
             # exit()
@@ -1850,6 +1850,8 @@ class InferenceToolDebug:
                         self.previous_gripper_action = action[6]
                         self.previous_gripper_action_robot = action_robot[6]
                         # print(observation['gripper_action'])
+                        print(observation['robot0_eef_quat'], observation_robot['robot0_eef_quat'])
+                        
                     if action_executed:
                         if self.environment.blender_enabled:
                             image_path = self.environment.blender_render()
@@ -2315,12 +2317,12 @@ class InferenceToolDebug:
         ori = obs['robot0_eef_quat']
         # print(pos, ori)
         des_pos = pos + action[0:3]
-        print(pos, des_pos)
+        # print(pos, des_pos)
         des_ori = T.quat_multiply(ori, T.axisangle2quat(action[3:6]))
         # print(des_pos)
         shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.103]))
         des_pos += shift_to_wrist 
-        print(des_pos)
+        # print(des_pos)
         if action[6] > 0:
             gripper_action = b'close'
         else:
@@ -2330,10 +2332,10 @@ class InferenceToolDebug:
         des_pose = map(lambda x: '%.6f' % x, des_pose)
         # print(list(des_pose))
         # exit()
-        # self._socket_pose_control.send_string(' '.join(des_pose))
+        self._socket_pose_control.send_string(' '.join(des_pose))
         if gripper_action != self.gripper_msg_prev:
-            # self._socket_gripper_control.send(gripper_action)
-            # self._socket_gripper_control.recv()
+            self._socket_gripper_control.send(gripper_action)
+            self._socket_gripper_control.recv()
             self.gripper_msg_prev = gripper_action
 
         # time.sleep(2.0)
