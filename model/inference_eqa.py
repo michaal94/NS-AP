@@ -22,7 +22,7 @@ from model.program_executor import ProgramStatus, ProgramExecutor
 
 from utils.utils import CyclicBuffer
 
-from ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM
+from .ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM
 
 class InferenceCode:
     CORRECT_ANSWER = 0
