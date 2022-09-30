@@ -1662,7 +1662,7 @@ class InferenceToolDebug:
               save_dir = 'temp',
               verbose = True
         ):
-        self.move_robot = False
+        self.move_robot = True
         self.verbose = verbose
         self.save_dir = save_dir
         self.disable_rendering = disable_rendering
@@ -1710,8 +1710,8 @@ class InferenceToolDebug:
         poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
         self.environment.apply_external_poses(poses_robot)
         self.environment.render()
-        print(poses_robot)
-        input()
+        # print(poses_robot)
+        # input()
 
         # Run some iteration to apply gravity to objects
         action = self.default_environment_action
@@ -1809,14 +1809,14 @@ class InferenceToolDebug:
             if program_status == ProgramStatus.ACTION or program_status == ProgramStatus.FINAL_ACTION:
                 planning_tout = self.planning_timeout * len(program_output['ACTION']['target'])
                 for _ in range(planning_tout):
-                    print(self.scene_graph[0]['in_hand'])
-                    print(self.scene_graph[0]['gripper_over'])
-                    print(self.scene_graph[0]['approached'])
-                    print(self.scene_graph[0]['raised'])
-                    print(self.scene_graph[1]['in_hand'])
-                    print(self.scene_graph[1]['gripper_over'])
-                    print(self.scene_graph[1]['approached'])
-                    print(self.scene_graph[1]['raised'])
+                    # print(self.scene_graph[0]['in_hand'])
+                    # print(self.scene_graph[0]['gripper_over'])
+                    # print(self.scene_graph[0]['approached'])
+                    # print(self.scene_graph[0]['raised'])
+                    # print(self.scene_graph[1]['in_hand'])
+                    # print(self.scene_graph[1]['gripper_over'])
+                    # print(self.scene_graph[1]['approached'])
+                    # print(self.scene_graph[1]['raised'])
                     # print(observation['robot0_eef_pos'])
                     # input()
                     # print(self.scene_graph_gt[2]['in_hand'], self.scene_graph_gt[2]['raised'])
