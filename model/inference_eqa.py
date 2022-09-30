@@ -1684,7 +1684,7 @@ class InferenceToolDebug:
         self.action_executor_robot = ActionExecutor(**action_executor_params)
         self.obs_num = 0
         self.last_render_path = None
-        self.loop_detector = CyclicBuffer(2)
+        self.loop_detector = CyclicBuffer(3)
 
     def run(self):
         assert self.instruction_model is not None, "Load instruction to program model (or set GT instruction mode) before running inference"
