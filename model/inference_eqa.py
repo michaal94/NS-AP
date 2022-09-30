@@ -1836,7 +1836,7 @@ class InferenceToolDebug:
                         print('Loop detected, exiting')
                         return InferenceCode.LOOP_ERROR
                     self.loop_detector.append(action_plan)
-                    if len(action_plan) == 0:
+                    if len(action_plan) == 0 and len(action_plan_robot) == 0:
                         if program_status == ProgramStatus.ACTION:
                             break
                         if self._check_task_completion(self._get_task_from_instruction(), observation):
@@ -1848,20 +1848,22 @@ class InferenceToolDebug:
                         else:
                             print('Task not reached target')
                             return InferenceCode.TASK_FAILURE
-                    action_to_execute = action_plan[0]
-                    action_to_execute_robot = action_plan_robot[0]
-                    self.action_executor.set_action(
-                        action_to_execute[0], 
-                        action_to_execute[1],
-                        observation,
-                        self.scene_graph
-                    )
-                    self.action_executor_robot.set_action(
-                        action_to_execute_robot[0], 
-                        action_to_execute_robot[1],
-                        observation_robot,
-                        self.scene_graph_robot
-                    )
+                    if len(action_plan > 0):
+                        action_to_execute = action_plan[0]
+                        self.action_executor.set_action(
+                            action_to_execute[0], 
+                            action_to_execute[1],
+                            observation,
+                            self.scene_graph
+                        )
+                    if len(action_plan_robot) > 0:
+                        action_to_execute_robot = action_plan_robot[0]
+                        self.action_executor_robot.set_action(
+                            action_to_execute_robot[0], 
+                            action_to_execute_robot[1],
+                            observation_robot,
+                            self.scene_graph_robot
+                        )
                     action_executed = False
                     # action_executed_robot = False
                     for _ in range(self.env_timeout):
