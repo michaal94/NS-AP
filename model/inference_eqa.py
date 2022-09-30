@@ -1709,7 +1709,9 @@ class InferenceToolDebug:
         assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
         poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
         self.environment.apply_external_poses(poses_robot)
-
+        self.environment.render()
+        print(poses_robot)
+        input()
 
         # Run some iteration to apply gravity to objects
         action = self.default_environment_action
