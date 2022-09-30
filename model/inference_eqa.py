@@ -1809,15 +1809,15 @@ class InferenceToolDebug:
             if program_status == ProgramStatus.ACTION or program_status == ProgramStatus.FINAL_ACTION:
                 planning_tout = self.planning_timeout * len(program_output['ACTION']['target'])
                 for _ in range(planning_tout):
-                    # print(self.scene_graph[0]['in_hand'])
-                    # print(self.scene_graph[0]['gripper_over'])
-                    # print(self.scene_graph[0]['approached'])
-                    # print(self.scene_graph[0]['raised'])
-                    # print(self.scene_graph[1]['in_hand'])
-                    # print(self.scene_graph[1]['gripper_over'])
-                    # print(self.scene_graph[1]['approached'])
-                    # print(self.scene_graph[1]['raised'])
-                    # print(observation['robot0_eef_pos'])
+                    print(self.scene_graph[0]['in_hand'])
+                    print(self.scene_graph[0]['gripper_over'])
+                    print(self.scene_graph[0]['approached'])
+                    print(self.scene_graph[0]['raised'])
+                    print(self.scene_graph[1]['in_hand'])
+                    print(self.scene_graph[1]['gripper_over'])
+                    print(self.scene_graph[1]['approached'])
+                    print(self.scene_graph[1]['raised'])
+                    print(observation['robot0_eef_pos'])
                     # input()
                     # print(self.scene_graph_gt[2]['in_hand'], self.scene_graph_gt[2]['raised'])
                     # print(self.scene_graph[2]['in_hand'], self.scene_graph[2]['raised'])
@@ -1829,7 +1829,7 @@ class InferenceToolDebug:
                     )
                     action_plan_robot = self.action_planner.get_action_sequence(
                         program_output['ACTION'],
-                        self.scene_graph
+                        self.scene_graph_robot
                     )
                     print(action_plan, action_plan_robot)
                     if self._detect_loop(action_plan):
