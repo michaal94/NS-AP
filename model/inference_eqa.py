@@ -1901,11 +1901,12 @@ class InferenceToolDebug:
                             image = self._load_image(image_path)
                         poses, bboxes = self.pose_model.get_pose(image, observation)
                         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
-                        image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-                        poses_robot, bboxes_robot = self._align_robot_debug(
-                            scene_vis, labels_robot, poses_robot, bboxes_robot 
-                        )
-                        image_robot.save(f'./output_shared/test_{counter}.png')
+                        if self.move_robot:
+                            image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
+                            poses_robot, bboxes_robot = self._align_robot_debug(
+                                scene_vis, labels_robot, poses_robot, bboxes_robot 
+                            )
+                            image_robot.save(f'./output_shared/test_{counter}.png')
                         counter += 1
                         
                         self._update_scene_graph(poses, bboxes, observation)
@@ -2017,7 +2018,7 @@ class InferenceToolDebug:
                 obj['gripper_over'] = False
                 bbox_boundaries = self._check_eef_in_bbox(obj, eef_pos)
                 finger_in_bbox = self._check_finger_in_bbox(obj, eef_pos, eef_ori)
-                # print(bbox_boundaries)
+                print(bbox_boundaries)
                 # print(gripper_closed)
                 # print(gripper_action)
                 if len(bbox_boundaries) == 3 or finger_in_bbox:
