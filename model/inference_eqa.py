@@ -1848,7 +1848,7 @@ class InferenceToolDebug:
                         else:
                             print('Task not reached target')
                             return InferenceCode.TASK_FAILURE
-                    if len(action_plan > 0):
+                    if len(action_plan) > 0:
                         action_to_execute = action_plan[0]
                         self.action_executor.set_action(
                             action_to_execute[0], 
