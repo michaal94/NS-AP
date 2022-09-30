@@ -889,3 +889,23 @@ class TabletopEnv(SingleArmEnv):
             controller = NeoController(**self.controller_cfg)
 
         self.robots[0].controller = controller
+
+    def apply_external_poses(self, poses):
+        for i, obj in enumerate(self.objects):
+            self.sim.data.set_joint_qpos(
+                obj.joints[0],
+                np.concatenate(
+                    [
+                        poses[i][0],
+                        T.convert_quat(poses[i][1], to="wxyz")
+                    ]
+                )
+            )
+            self.sim.data.set_joint_qvel(
+                obj.joints[0],
+                np.concatenate(
+                    [
+                        np.zeros((6))
+                    ]
+                )
+            )

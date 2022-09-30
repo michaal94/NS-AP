@@ -1698,12 +1698,24 @@ class InferenceToolDebug:
 
         # Setup environment
         self._setup_environment()
+
+        scene_vis_gt = self.visual_recognition_model_gt.get_scene(None, None, self.scene_gt)
+
+        # First from robot        
+        image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
+        image_robot.save('./output_shared/test_0.png')
+        counter = 1
+        assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
+        poses_robot, bboxes_robot = self._align_robot_debug(scene_vis, labels_robot, poses_robot, bboxes_robot)
+        self.environment.apply_external_poses(poses_robot)
+
+
         # Run some iteration to apply gravity to objects
         action = self.default_environment_action
         _, _, _, _ = self.environment.step(action)
         observation, _, _, _ = self.environment.step(action)
         observation_robot = self._get_observation_robot(observation)
-        # input()
+        input()
         #DEBUG
         self.action_executor.env = self.environment
         # self.action_executor.interpolate_free_movement = True
@@ -1731,19 +1743,13 @@ class InferenceToolDebug:
         poses, bboxes = self.pose_model.get_pose(image, observation)
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
         
-        image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-        image_robot.save('./output_shared/test_0.png')
-        counter = 1
         # print(poses, poses_robot)
 
         # exit()
 
         scene_vis = self.visual_recognition_model.get_scene(image, None, self.scene_gt)
-        scene_vis_gt = self.visual_recognition_model_gt.get_scene(image, None, self.scene_gt)
         
-        assert len(scene_vis) == len(poses_robot), 'Incorrect size'
 
-        poses_robot, bboxes_robot = self._align_robot_debug(scene_vis, labels_robot, poses_robot, bboxes_robot)
         # print(scene_vis)
         # exit()
 

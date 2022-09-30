@@ -129,7 +129,8 @@ class ActionExecutor:
             bbox = scene[target]['bbox']
             z_coord = bbox[:, 2]
             z_coord = np.amax(z_coord) + move_clearance + obj_clearance
-            target_pos = scene[target]['pos'] - eef_to_in_hand
+            # target_pos = scene[target]['pos'] - eef_to_in_hand
+            target_pos = np.mean(bbox, axis=0) - eef_to_in_hand
             target_pos[2] = z_coord
             self.move_dict['trajectory'] = self._get_move_trajectory(target_pos, obs, scene)
             self.move_dict['current_target'] = self.move_dict['trajectory'].pop(0)
