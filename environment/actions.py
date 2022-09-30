@@ -187,37 +187,37 @@ class ActionExecutor:
             obj_z_dir = T.quat2mat(obj['ori'])[:, 2]
             # PRINT HERE
             # print(obj_z_dir)
-            # if self._angle_between(obj_z_dir, np.array([0, 0, 1])) < self.angle_up_tolerance:
-            #     rec = Rectangle(
-            #         Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-            #         Point(obj['bbox'][1][0], obj['bbox'][1][1]),
-            #         Point(obj['bbox'][2][0], obj['bbox'][2][1]),
-            #         Point(obj['bbox'][3][0], obj['bbox'][3][1])
-            #     )
-            # else:
-            #     print('side')
-            #     rec1 = Rectangle(
-            #         Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-            #         Point(obj['bbox'][1][0], obj['bbox'][1][1]),
-            #         Point(obj['bbox'][5][0], obj['bbox'][5][1]),
-            #         Point(obj['bbox'][4][0], obj['bbox'][4][1])
-            #     )
-            #     rec2 = Rectangle(
-            #         Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-            #         Point(obj['bbox'][4][0], obj['bbox'][4][1]),
-            #         Point(obj['bbox'][7][0], obj['bbox'][7][1]),
-            #         Point(obj['bbox'][3][0], obj['bbox'][3][1])
-            #     )
-            #     if rec1.area() > rec2.area():
-            #         rec = rec1
-            #     else:
-            #         rec = rec2
-            rec = Rectangle(
-                Point(obj['bbox'][0][0], obj['bbox'][0][1]),
-                Point(obj['bbox'][1][0], obj['bbox'][1][1]),
-                Point(obj['bbox'][2][0], obj['bbox'][2][1]),
-                Point(obj['bbox'][3][0], obj['bbox'][3][1])
-            )
+            if self._angle_between(obj_z_dir, np.array([0, 0, 1])) < self.angle_up_tolerance:
+                rec = Rectangle(
+                    Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+                    Point(obj['bbox'][1][0], obj['bbox'][1][1]),
+                    Point(obj['bbox'][2][0], obj['bbox'][2][1]),
+                    Point(obj['bbox'][3][0], obj['bbox'][3][1])
+                )
+            else:
+                print('side')
+                rec1 = Rectangle(
+                    Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+                    Point(obj['bbox'][1][0], obj['bbox'][1][1]),
+                    Point(obj['bbox'][5][0], obj['bbox'][5][1]),
+                    Point(obj['bbox'][4][0], obj['bbox'][4][1])
+                )
+                rec2 = Rectangle(
+                    Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+                    Point(obj['bbox'][4][0], obj['bbox'][4][1]),
+                    Point(obj['bbox'][7][0], obj['bbox'][7][1]),
+                    Point(obj['bbox'][3][0], obj['bbox'][3][1])
+                )
+                if rec1.area() > rec2.area():
+                    rec = rec1
+                else:
+                    rec = rec2
+            # rec = Rectangle(
+            #     Point(obj['bbox'][0][0], obj['bbox'][0][1]),
+            #     Point(obj['bbox'][1][0], obj['bbox'][1][1]),
+            #     Point(obj['bbox'][2][0], obj['bbox'][2][1]),
+            #     Point(obj['bbox'][3][0], obj['bbox'][3][1])
+            # )
             # print(obj['name'])
             # print(rec)
             height = np.amax(obj['bbox'][:, 2])
