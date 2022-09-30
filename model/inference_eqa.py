@@ -1715,7 +1715,7 @@ class InferenceToolDebug:
         _, _, _, _ = self.environment.step(action)
         observation, _, _, _ = self.environment.step(action)
         observation_robot = self._get_observation_robot(observation)
-        input()
+        # input()
         #DEBUG
         self.action_executor.env = self.environment
         # self.action_executor.interpolate_free_movement = True
@@ -1739,6 +1739,7 @@ class InferenceToolDebug:
             if not self.disable_rendering:
                 self.environment.render()
             image = None
+        input()
 
         poses, bboxes = self.pose_model.get_pose(image, observation)
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
