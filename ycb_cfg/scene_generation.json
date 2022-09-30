@@ -11,7 +11,7 @@
     "max_retries": 50,
     "intersection_eps": 0.05,
     "margin": 0.045,
-    "start_idx": 0,
+    "start_idx": 1,
     "num_images": 1,
     "filename_prefix": "NS_AP",
     "split": "demo",
