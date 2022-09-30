@@ -892,6 +892,7 @@ class TabletopEnv(SingleArmEnv):
 
     def apply_external_poses(self, poses):
         for i, obj in enumerate(self.objects):
+            print(poses[i])
             self.sim.data.set_joint_qpos(
                 obj.joints[0],
                 np.concatenate(
