@@ -1809,7 +1809,14 @@ class InferenceToolDebug:
             if program_status == ProgramStatus.ACTION or program_status == ProgramStatus.FINAL_ACTION:
                 planning_tout = self.planning_timeout * len(program_output['ACTION']['target'])
                 for _ in range(planning_tout):
-                    # print(self.scene_graph[0]['pos'])
+                    print(self.scene_graph[0]['in_hand'])
+                    print(self.scene_graph[0]['gripper_over'])
+                    print(self.scene_graph[0]['approached'])
+                    print(self.scene_graph[0]['raised'])
+                    print(self.scene_graph[1]['in_hand'])
+                    print(self.scene_graph[1]['gripper_over'])
+                    print(self.scene_graph[1]['approached'])
+                    print(self.scene_graph[1]['raised'])
                     # print(observation['robot0_eef_pos'])
                     # input()
                     # print(self.scene_graph_gt[2]['in_hand'], self.scene_graph_gt[2]['raised'])
