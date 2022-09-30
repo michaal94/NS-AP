@@ -1662,6 +1662,7 @@ class InferenceToolDebug:
               save_dir = 'temp',
               verbose = True
         ):
+        self.move_robot = False
         self.verbose = verbose
         self.save_dir = save_dir
         self.disable_rendering = disable_rendering
@@ -1739,7 +1740,7 @@ class InferenceToolDebug:
             if not self.disable_rendering:
                 self.environment.render()
             image = None
-        input()
+        # input()
 
         poses, bboxes = self.pose_model.get_pose(image, observation)
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
@@ -1854,8 +1855,12 @@ class InferenceToolDebug:
                     action_executed = False
                     # action_executed_robot = False
                     for _ in range(self.env_timeout):
-                        print(self.action_executor.get_current_action(), self.action_executor_robot.get_current_action())
-                        if self.action_executor.get_current_action() or self.action_executor_robot.get_current_action():
+                        # print(self.action_executor.get_current_action(), self.action_executor_robot.get_current_action())
+                        if self.move_robot:
+                            current_action_present = self.action_executor.get_current_action() or self.action_executor_robot.get_current_action()
+                        else:
+                            current_action_present = self.action_executor.get_current_action()
+                        if current_action_present:
                             if self.action_executor.get_current_action():
                                 action = self.action_executor.step(observation)
                             else:
@@ -1874,7 +1879,8 @@ class InferenceToolDebug:
                         # print(action, action_robot)
                         # print(action)
                         observation, _, _, _ = self.environment.step(action)
-                        self._send_robot_action(action_robot, observation_robot)
+                        if self.move_robot:
+                            self._send_robot_action(action_robot, observation_robot)
                         # input()
                         if not self.environment.blender_enabled:
                             if not self.disable_rendering:
