@@ -1849,6 +1849,7 @@ class InferenceToolDebug:
                             print('Task not reached target')
                             return InferenceCode.TASK_FAILURE
                     action_to_execute = action_plan[0]
+                    action_to_execute_robot = action_plan_robot[0]
                     self.action_executor.set_action(
                         action_to_execute[0], 
                         action_to_execute[1],
@@ -1856,8 +1857,8 @@ class InferenceToolDebug:
                         self.scene_graph
                     )
                     self.action_executor_robot.set_action(
-                        action_to_execute[0], 
-                        action_to_execute[1],
+                        action_to_execute_robot[0], 
+                        action_to_execute_robot[1],
                         observation_robot,
                         self.scene_graph_robot
                     )
