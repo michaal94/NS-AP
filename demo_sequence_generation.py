@@ -100,7 +100,7 @@ def main(args):
     # if idx not in [str(i) for i in range(10)]:
     #     print("Wrong idx chosen, try again")
     #     exit()
-    idx = 0
+    idx = 1
     instr = instruction_struct['instructions'][idx]
     print(f"Chosen instruction:\t{instr['instruction']}")
 
