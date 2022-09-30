@@ -1,6 +1,6 @@
 {
 	"metadata": "configs/metadata.json",
-	"template_file": "templates/templates_neurips/pick_up_lightest.json",
+	"template_file": "templates/templates_neurips/stack.json",
 	"synonyms": "configs/synonyms.json",
 	"plurals": "configs/plurals.json",
 	"substitutions": "configs/substitutions.json",
