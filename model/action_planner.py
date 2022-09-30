@@ -86,9 +86,9 @@ class ActionGTPlanner(ActionPlanInference):
                 top = target[i]
                 bottom = target[i + 1]
                 pos_top = scene_state[top]['pos']
-                pos_top = np.mean(scene_state[top]['bbox'])
+                pos_top = np.mean(scene_state[top]['bbox'], axis=0)
                 pos_bot = scene_state[bottom]['pos']
-                pos_bot = np.mean(scene_state[bottom]['bbox'])
+                pos_bot = np.mean(scene_state[bottom]['bbox'], axis=0)
                 if np.linalg.norm(pos_top[0:2] - pos_bot[0:2]) < 0.1:
                     if (pos_top[2] - pos_bot[2]) > 0.001:
                         if in_hand is None:
