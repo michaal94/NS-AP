@@ -897,7 +897,7 @@ class TabletopEnv(SingleArmEnv):
                 obj.joints[0],
                 np.concatenate(
                     [
-                        poses[i][0] + np.array([0.0, 0.0, 0.05]),
+                        poses[i][0] + np.array([0.0, 0.0, 0.005]),
                         T.convert_quat(poses[i][1], to="wxyz")
                     ]
                 )

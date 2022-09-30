@@ -1909,7 +1909,7 @@ class InferenceToolDebug:
                         counter += 1
                         
                         self._update_scene_graph(poses, bboxes, observation)
-                        self._update_scene_graph(poses_robot, bboxes_robot, observation, robot=True)
+                        self._update_scene_graph(poses_robot, bboxes_robot, observation_robot, robot=True)
                         self._update_scene_graph(poses_gt, bboxes_gt, observation, gt=True)
                         if not self._check_gt_scene():
                             print("Broken scene error")
@@ -1955,7 +1955,8 @@ class InferenceToolDebug:
                         obj['in_hand'] = True
                     else:
                         obj['approached'] = True
-                elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                # elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                elif len(bbox_boundaries) == 2:
                     obj['gripper_over'] = True
                 if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
                     obj['raised'] = True
@@ -1989,7 +1990,8 @@ class InferenceToolDebug:
                         obj['in_hand'] = True
                     else:
                         obj['approached'] = True
-                elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                # elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                elif len(bbox_boundaries) == 2:
                     obj['gripper_over'] = True
                 if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
                     obj['raised'] = True
@@ -2023,7 +2025,8 @@ class InferenceToolDebug:
                         obj['in_hand'] = True
                     else:
                         obj['approached'] = True
-                elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                # elif ('x' in bbox_boundaries and 'y' in bbox_boundaries):
+                elif len(bbox_boundaries) == 2:
                     obj['gripper_over'] = True
                 if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
                     obj['raised'] = True
