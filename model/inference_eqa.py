@@ -1706,7 +1706,7 @@ class InferenceToolDebug:
         image_robot.save('./output_shared/test_0.png')
         counter = 1
         assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
-        poses_robot, bboxes_robot = self._align_robot_debug(scene_vis, labels_robot, poses_robot, bboxes_robot)
+        poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
         self.environment.apply_external_poses(poses_robot)
 
 
