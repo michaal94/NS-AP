@@ -2443,7 +2443,10 @@ class InferenceToolDebug:
             print(names[-1])
             pose_cosypose = obj['pose']
             pos_cosy, ori_cosy = pose_cosypose
-            pos = pos_cosy + COSYPOSE_TRANSFORM[obj['label']][0]
+            pos_correction = np.matmul(
+                T.quat2mat(ori_cosy), COSYPOSE_TRANSFORM[obj['label']][0]
+            )
+            pos = pos_cosy + pos_correction
             ori = T.quat_multiply(ori_cosy, COSYPOSE_TRANSFORM[obj['label']][1])
             print(pos_cosy, pos)
             print(ori_cosy, ori)
