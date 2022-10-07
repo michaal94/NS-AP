@@ -58,9 +58,15 @@ class ShopVrbXMLFilesTrain:
 
 class YCBXMLFiles:
     bleach_cleanser = './assets/ycb/bleach_cleanser.xml'
+    bowl = './assets/ycb/bowl.xml'
     cracker_box = './assets/ycb/cracker_box.xml'
-    sugar_box = './assets/ycb/sugar_box.xml'
+    foam_brick = './assets/ycb/foam_brick.xml'
+    master_chef_can = './assets/ycb/master_chef_can.xml'
+    mug = './assets/ycb/mug.xml'
     mustard_bottle = './assets/ycb/mustard_bottle.xml'
+    potted_meat_can = './assets/ycb/potted_meat_can.xml'
+    sugar_box = './assets/ycb/sugar_box.xml'
+    tomato_soup_can = './assets/ycb/tomato_soup_can.xml'
 
     @staticmethod
     def get(name, mode='train'):

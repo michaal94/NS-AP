@@ -7,7 +7,7 @@
     <body>
       <body name="object">
         <geom pos="0 0 0" mesh="sugar_box_mesh" type="mesh" contype="0" conaffinity="0" group="1"/>
-        <geom pos="0 0 0" mesh="sugar_box_hull_mesh_1" type="mesh" margin="0.001" solimp="0.998 0.998 0.001" solref="0.001 1" density="2000" friction="0.95 0.3 0.1" group="0" condim="4"/>
+        <geom pos="0 0 0" mesh="sugar_box_hull_mesh_1" type="mesh" margin="0.001" solimp="0.998 0.998 0.001" solref="0.001 1" density="150" friction="0.95 0.3 0.1" group="0" condim="4"/>
       </body>
       <site rgba="0 0 0 0" size="0.005" pos="0 0 -0.001" name="bottom_site"/>
       <site rgba="0 0 0 0" size="0.005" pos="0 0 0.02" name="top_site"/>
