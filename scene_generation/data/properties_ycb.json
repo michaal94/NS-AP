@@ -1,9 +1,15 @@
 {
   "shapes": {
-	  "cracker_box": "cracker_box",
-    "sugar_box": "sugar_box",
     "bleach_cleanser": "bleach_cleanser",
-    "mustard_bottle": "mustard_bottle"
+    "bowl": "bowl",
+	  "cracker_box": "cracker_box",
+    "foam_brick": "foam_brick",
+    "master_chef_can": "master_chef_can",
+    "mug": "mug",
+    "mustard_bottle": "mustard_bottle",
+    "potted_meat_can": "potted_meat_can",
+    "sugar_box": "sugar_box",
+    "tomato_soup_can": "tomato_soup_can"
   },
   "colors": {
     "red": [173, 35, 35],
@@ -21,6 +27,6 @@
   },
   "sizes": {
     "bigger": 1.0,
-	  "smaller": 0.45
+	  "smaller": 1.0
   }
 }

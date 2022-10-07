@@ -21,6 +21,9 @@ parser.add_argument(
     '--input_instruction_json', default=''
 )
 parser.add_argument(
+    '--instruction_idx', default=0, type=int
+)
+parser.add_argument(
     '--input_scene_dir', default=''
 )
 parser.add_argument(
@@ -100,7 +103,7 @@ def main(args):
     # if idx not in [str(i) for i in range(10)]:
     #     print("Wrong idx chosen, try again")
     #     exit()
-    idx = 1
+    idx = args.instruction_idx
     instr = instruction_struct['instructions'][idx]
     print(f"Chosen instruction:\t{instr['instruction']}")
 

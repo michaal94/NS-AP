@@ -345,8 +345,11 @@ def add_random_objects(scene_struct, num_objects, config, camera):
     for i in range(num_objects):
         # Choose random color and shape
         obj_name, obj_name_out = random.choice(object_mapping)
-        if obj_name in used:
-            continue
+        for _ in range(100):
+            if obj_name in used:
+                obj_name, obj_name_out = random.choice(object_mapping)
+            else:
+                break
         used.append(obj_name)
         if 'soda_can' in obj_name_out:
             obj_name_out = 'soda_can'
@@ -376,14 +379,9 @@ def add_random_objects(scene_struct, num_objects, config, camera):
                 del blender_objects
                 del objects
                 return None, None
-            x = random.uniform(-0.25, 0.25)
+            # x = random.uniform(-0.25, 0.25)
             x = random.uniform(0.3, 0.7)
-            if config.active_cam == 0:
-                y = random.uniform(-0.25, 0.25)
-            elif config.active_cam == 1:
-                y = random.uniform(-0.33, 0.11)
-            else:
-                y = random.uniform(-0.11, 0.33)
+            y = random.uniform(-0.32, 0.32)
 
 
             # x = x + 0.4
@@ -460,13 +458,14 @@ def add_random_objects(scene_struct, num_objects, config, camera):
         obj_name_out = object_properties[obj_name]['name']
 
         weight = object_properties[obj_name]['weight_gt_mean'] * r
-        for _ in range(100):
-            rand_percentage = np.random.uniform(-config.weight_range, config.weight_range)
-            weight_out = (1 + rand_percentage) * weight
-            weight_out = np.around(weight_out, decimals=1)
-            if weight_out not in weights:
-                weights.append(weight_out)
-                break
+        weight_out = weight
+        # for _ in range(100):
+        #     rand_percentage = np.random.uniform(-config.weight_range, config.weight_range)
+        #     weight_out = (1 + rand_percentage) * weight
+        #     weight_out = np.around(weight_out, decimals=1)
+        #     if weight_out not in weights:
+        #         weights.append(weight_out)
+        #         break
         stackable = object_properties[obj_name]['stackable']
         stack_base = object_properties[obj_name]['stack_base']
         pickupable = object_properties[obj_name]['pickupable']

@@ -1702,13 +1702,14 @@ class InferenceToolDebug:
 
         scene_vis_gt = self.visual_recognition_model_gt.get_scene(None, None, self.scene_gt)
 
-        # First from robot        
-        image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-        image_robot.save('./output_shared/test_0.png')
-        counter = 1
-        assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
-        poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
-        self.environment.apply_external_poses(poses_robot)
+        # First from robot
+        if self.move_robot:   
+            image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
+            image_robot.save('./output_shared/test_0.png')
+            counter = 1
+            assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
+            poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
+            self.environment.apply_external_poses(poses_robot)
         self.environment.render()
         # print(poses_robot)
         # input()
@@ -1717,7 +1718,8 @@ class InferenceToolDebug:
         action = self.default_environment_action
         _, _, _, _ = self.environment.step(action)
         observation, _, _, _ = self.environment.step(action)
-        observation_robot = self._get_observation_robot(observation)
+        if self.move_robot:
+            observation_robot = self._get_observation_robot(observation)
         # input()
         #DEBUG
         self.action_executor.env = self.environment
@@ -1762,10 +1764,11 @@ class InferenceToolDebug:
         self.scene_graph = self._make_scene_graph(scene_vis, poses, bboxes)
         self.scene_graph_gt = self._make_scene_graph(scene_vis_gt, poses_gt, bboxes_gt)
 
-        self.scene_graph_robot = self._make_scene_graph(scene_vis, poses_robot, bboxes_robot)
+        if self.move_robot:
+            self.scene_graph_robot = self._make_scene_graph(scene_vis, poses_robot, bboxes_robot)
         
-        print(self.scene_graph)
-        print(self.scene_graph_robot)
+        # print(self.scene_graph)
+        # print(self.scene_graph_robot)
         # exit()
 
         self.environment.print_robot_configuration()
@@ -1781,6 +1784,7 @@ class InferenceToolDebug:
         self.task = self._get_task_from_instruction()
         # print(self.scene_graph)
         # exit()
+        action_plan_robot = []
 
         for _ in range(self.timeout):
             # self.scene_graph[0]['weight'] = np.array(160)
@@ -1811,15 +1815,15 @@ class InferenceToolDebug:
             if program_status == ProgramStatus.ACTION or program_status == ProgramStatus.FINAL_ACTION:
                 planning_tout = self.planning_timeout * len(program_output['ACTION']['target'])
                 for _ in range(planning_tout):
-                    print(self.scene_graph[0]['in_hand'])
-                    print(self.scene_graph[0]['gripper_over'])
-                    print(self.scene_graph[0]['approached'])
-                    print(self.scene_graph[0]['raised'])
-                    print(self.scene_graph[1]['in_hand'])
-                    print(self.scene_graph[1]['gripper_over'])
-                    print(self.scene_graph[1]['approached'])
-                    print(self.scene_graph[1]['raised'])
-                    print(observation['robot0_eef_pos'])
+                    # print(self.scene_graph[0]['in_hand'])
+                    # print(self.scene_graph[0]['gripper_over'])
+                    # print(self.scene_graph[0]['approached'])
+                    # print(self.scene_graph[0]['raised'])
+                    # print(self.scene_graph[1]['in_hand'])
+                    # print(self.scene_graph[1]['gripper_over'])
+                    # print(self.scene_graph[1]['approached'])
+                    # print(self.scene_graph[1]['raised'])
+                    # print(observation['robot0_eef_pos'])
                     # input()
                     # print(self.scene_graph_gt[2]['in_hand'], self.scene_graph_gt[2]['raised'])
                     # print(self.scene_graph[2]['in_hand'], self.scene_graph[2]['raised'])
@@ -1829,11 +1833,12 @@ class InferenceToolDebug:
                         program_output['ACTION'],
                         self.scene_graph
                     )
-                    action_plan_robot = self.action_planner.get_action_sequence(
-                        program_output['ACTION'],
-                        self.scene_graph_robot
-                    )
-                    print(action_plan, action_plan_robot)
+                    if self.move_robot:
+                        action_plan_robot = self.action_planner.get_action_sequence(
+                            program_output['ACTION'],
+                            self.scene_graph_robot
+                        )
+                    # print(action_plan, action_plan_robot)
                     if self._detect_loop(action_plan):
                         print('Loop detected, exiting')
                         return InferenceCode.LOOP_ERROR
@@ -1899,8 +1904,8 @@ class InferenceToolDebug:
                         if not self.environment.blender_enabled:
                             if not self.disable_rendering:
                                 self.environment.render()
-
-                        observation_robot = self._get_observation_robot(observation)
+                        if self.move_robot:
+                            observation_robot = self._get_observation_robot(observation)
                         self.previous_gripper_action = action[6]
                         self.previous_gripper_action_robot = action_robot[6]
                         # print(observation['gripper_action'])
@@ -1919,10 +1924,11 @@ class InferenceToolDebug:
                                 scene_vis, labels_robot, poses_robot, bboxes_robot 
                             )
                             image_robot.save(f'./output_shared/test_{counter}.png')
-                        counter += 1
+                            counter += 1
                         
                         self._update_scene_graph(poses, bboxes, observation)
-                        self._update_scene_graph(poses_robot, bboxes_robot, observation_robot, robot=True)
+                        if self.move_robot:
+                            self._update_scene_graph(poses_robot, bboxes_robot, observation_robot, robot=True)
                         self._update_scene_graph(poses_gt, bboxes_gt, observation, gt=True)
                         if not self._check_gt_scene():
                             print("Broken scene error")
@@ -1975,8 +1981,8 @@ class InferenceToolDebug:
                     obj_y_dir = obj_mat[:, 1]
                     obj_x_dir = obj_mat[:, 0]
                     angle_to_z = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-                    angle_to_y = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-                    angle_to_x = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
+                    angle_to_y = self._angle_between(obj_y_dir, np.array([0, 0, 1]))
+                    angle_to_x = self._angle_between(obj_x_dir, np.array([0, 0, 1]))
                     if np.abs(angle_to_z) < np.pi / 6 or np.abs(angle_to_z) - np.pi < np.pi / 6:
                         if ('x' in bbox_boundaries and 'y' in bbox_boundaries):
                             obj['gripper_over'] = True
@@ -2025,8 +2031,8 @@ class InferenceToolDebug:
                     obj_y_dir = obj_mat[:, 1]
                     obj_x_dir = obj_mat[:, 0]
                     angle_to_z = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-                    angle_to_y = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-                    angle_to_x = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
+                    angle_to_y = self._angle_between(obj_y_dir, np.array([0, 0, 1]))
+                    angle_to_x = self._angle_between(obj_x_dir, np.array([0, 0, 1]))
                     if np.abs(angle_to_z) < np.pi / 6 or np.abs(angle_to_z) - np.pi < np.pi / 6:
                         if ('x' in bbox_boundaries and 'y' in bbox_boundaries):
                             obj['gripper_over'] = True
@@ -2060,7 +2066,7 @@ class InferenceToolDebug:
                 obj['gripper_over'] = False
                 bbox_boundaries = self._check_eef_in_bbox(obj, eef_pos)
                 finger_in_bbox = self._check_finger_in_bbox(obj, eef_pos, eef_ori)
-                print(bbox_boundaries)
+                # print(bbox_boundaries)
                 # print(gripper_closed)
                 # print(gripper_action)
                 if len(bbox_boundaries) == 3 or finger_in_bbox:
@@ -2075,8 +2081,8 @@ class InferenceToolDebug:
                     obj_y_dir = obj_mat[:, 1]
                     obj_x_dir = obj_mat[:, 0]
                     angle_to_z = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-                    angle_to_y = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-                    angle_to_x = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
+                    angle_to_y = self._angle_between(obj_y_dir, np.array([0, 0, 1]))
+                    angle_to_x = self._angle_between(obj_x_dir, np.array([0, 0, 1]))
                     if np.abs(angle_to_z) < np.pi / 6 or np.abs(angle_to_z) - np.pi < np.pi / 6:
                         if ('x' in bbox_boundaries and 'y' in bbox_boundaries):
                             obj['gripper_over'] = True
@@ -2091,6 +2097,14 @@ class InferenceToolDebug:
                 if obj['raised'] and obj['in_hand']:
                     obj['weight'] = obs['weight_measurement']
                 # print(obj['name'], obj['in_hand'], obj['raised'])
+
+    def _angle_between(self, v1, v2):
+        v1_u = self._unit_vector(v1)
+        v2_u = self._unit_vector(v2)
+        return np.arccos(np.clip(np.dot(v1_u, v2_u), -1.0, 1.0))
+    
+    def _unit_vector(self, vector):
+        return vector / np.linalg.norm(vector)
 
     def _check_eef_in_bbox(self, obj, eef_pos):
         bbox = obj['bbox']

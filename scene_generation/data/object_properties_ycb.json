@@ -13,7 +13,7 @@
         "shape": "irregularly shaped",
         "size1": "large",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 54,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -32,7 +32,7 @@
         "shape": "hemisphere",
         "size1": "medium",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 152,
         "stackable": true,
         "stack_base": true,
         "pickupable": true
@@ -51,7 +51,7 @@
         "shape": "prismatic",
         "size1": "large",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 53,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -70,7 +70,7 @@
         "shape": "prismatic",
         "size1": "small",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 32,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -89,7 +89,7 @@
         "shape": "cylindrical",
         "size1": "large",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 57,
         "stackable": false,
         "stack_base": true,
         "pickupable": false
@@ -104,11 +104,11 @@
         "material1": "metal",
         "material2": "-",
         "movability": "portable",
-        "name": "bowl",
+        "name": "mug",
         "shape": "cylindrical",
         "size1": "medium",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 96,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -127,7 +127,7 @@
         "shape": "irregularly shaped",
         "size1": "large",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 46,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -146,7 +146,7 @@
         "shape": "prismatic",
         "size1": "medium",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 24,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -165,7 +165,7 @@
         "shape": "prismatic",
         "size1": "medium",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 28,
         "stackable": true,
         "stack_base": false,
         "pickupable": true
@@ -184,7 +184,7 @@
         "shape": "cylindrical",
         "size1": "medium",
         "size2": "-",
-        "weight_gt_mean": 600,
+        "weight_gt_mean": 36,
         "stackable": true,
         "stack_base": false,
         "pickupable": true

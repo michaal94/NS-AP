@@ -1,7 +1,7 @@
 {
 	"dataset": "test name",
 	"properties": [
-		"colour", "material", "name"
+		"colour", "material", "name", "shape"
 	],
 	"parameters": [
 		"object", "relation", "table_part", "weight_specifier"
