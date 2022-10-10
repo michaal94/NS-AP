@@ -1838,7 +1838,7 @@ class InferenceToolDebug:
                             program_output['ACTION'],
                             self.scene_graph_robot
                         )
-                    # print(action_plan, action_plan_robot)
+                    print(action_plan, action_plan_robot)
                     if self._detect_loop(action_plan):
                         print('Loop detected, exiting')
                         return InferenceCode.LOOP_ERROR

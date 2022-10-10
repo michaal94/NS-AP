@@ -58,7 +58,7 @@ class ActionExecutor:
         self.obj_put_down_clearence = 0.02
         # Half of the pad:
         self.gripper_pad_height = 0.016
-        self.gripper_open_width = 0.1113 / 2
+        self.gripper_open_width = 0.08 / 2
         self.ori_sensitivity = 0.01
         self.delta_control = delta_control
         self.interp_angle = np.pi / 15
