@@ -1767,6 +1767,7 @@ class InferenceToolDebug:
         if self.move_robot:
             self.scene_graph_robot = self._make_scene_graph(scene_vis, poses_robot, bboxes_robot)
         
+        print(f'Move robot: {self.move_robot}')
         # print(self.scene_graph)
         # print(self.scene_graph_robot)
         # exit()
