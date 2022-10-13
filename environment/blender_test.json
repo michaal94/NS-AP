@@ -1,0 +1,16 @@
+{
+    "base_scene_file": "/home/michas/Desktop/test.blend",
+    "materials_dir": "scene_generation/data/materials",
+    "properties_json": "scene_generation/data/properties_ns_ap.json",
+    "object_properties_json": "scene_generation/data/object_properties_ns_ap.json",
+    "shape_dir": "scene_generation/data/shapes",
+    "render_tile_size": 2048,
+    "render_num_samples": 64,
+    "render_min_bounces": 8,
+    "render_max_bounces": 8,
+    "width": 1920,
+    "height": 1080,
+    "use_gpu": true,
+    "active_cam": 1,
+    "use_optix": false
+  }

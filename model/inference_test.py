@@ -15,13 +15,12 @@ from model import INSTRUCTION_MODELS, VISUAL_RECOGNITION_MODELS
 from model import POSE_MODELS, ACTION_PLAN_MODELS
 
 from environment.scene_parser import SceneParser
-from environment.tabletop_env_eqa import TabletopEnv
+from environment.tabletop_env_test import TabletopEnv
 from environment.actions import ActionExecutor
 
 from model.program_executor import ProgramStatus, ProgramExecutor
 
 from utils.utils import CyclicBuffer
-from utils.communication import ParamClient
 
 from .ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM
 
@@ -607,6 +606,7 @@ class InferenceTool:
                 "observations": [],
                 "observations_gt": [],
                 "image_paths": [],
+                "obs_str": [],
                 "result": None
             }
             with open(self.json_path, 'w') as f:
@@ -669,6 +669,14 @@ class InferenceTool:
 
         info_struct['observations'].append(obs_set)
         info_struct['observations_gt'].append(obs_set_gt)
+        obs_joint = {
+            'sin': obs['robot0_joint_pos_sin'].tolist(),
+            'cos': obs['robot0_joint_pos_cos'].tolist(),
+            'gr': obs['robot0_gripper_qpos'].tolist(),
+        }
+        # print(obs)
+        # exit()
+        info_struct["obs_str"].append(obs_joint)
         with open(self.json_path, 'w') as f:
             json.dump(info_struct, f, indent=4)
         self.obs_num += 1
@@ -2452,11 +2460,6 @@ class InferenceToolDebug:
         gripper_close_perc = 0.5 * (finger1_perc_close + finger2_perc_close)
         gripper_action = 2 * gripper_close_perc - 1.0
 
-        weight_msg = self._weight_client
-        z_force = weight_msg['wrench']['force']['z']
-        weight = -z_force / 9.81
-
-
         # if finger1_vel > 0.001 and finger2_vel > 0.001:
         #     gripper_action = -1.0
         # else:
@@ -2474,7 +2477,7 @@ class InferenceToolDebug:
         # print(gripper_action, gripper_closed)
         # gripper_action = obs['gripper_action'] 
         # gripper_closed = obs['gripper_closed'] 
-        # weight = obs['weight_measurement'] 
+        weight = obs['weight_measurement'] 
 
         return pos, ori, gripper_action, gripper_closed, weight
 
@@ -2562,12 +2565,6 @@ class InferenceToolDebug:
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
         self._socket_img_pose_msg = context.socket(zmq.REQ)
         self._socket_img_pose_msg.connect("tcp://127.0.0.1:5559")
-        self._weight_client = ParamClient(
-            addr='127.0.0.1',
-            start_port=5560
-        )
-        self._weight_client.declare('F_ext')
-        self._weight_client.subscribe('F_ext')
 
         self.gripper_msg_prev = None
 
