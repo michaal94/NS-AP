@@ -653,7 +653,7 @@ class ActionExecutor:
             return [eef_pos[0], eef_pos[1], eef_pos[2], curr_ori[0], curr_ori[1], curr_ori[2], 1]
 
     def _release(self, obs):
-        if obs['gripper_action'] < -0.99:
+        if obs['gripper_action'] < -0.9:
             self._unset_action()
             if self.delta_control:
                 return [0, 0, 0, 0, 0, 0, self.gripper_dir]
