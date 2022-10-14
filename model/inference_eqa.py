@@ -2454,7 +2454,7 @@ class InferenceToolDebug:
         finger2_perc_close = 1.0 - finger2_pos / finger_reach
         gripper_close_perc = 0.5 * (finger1_perc_close + finger2_perc_close)
         gripper_action = 2 * gripper_close_perc - 1.0
-
+        print(f'gripper_action: {gripper_action}')
         weight_msg = self._weight_client
         z_force = weight_msg['wrench']['force']['z']
         weight = -z_force / 9.81
