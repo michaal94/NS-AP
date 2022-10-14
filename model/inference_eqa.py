@@ -1997,7 +1997,7 @@ class InferenceToolDebug:
                     elif np.abs(angle_to_x) < np.pi / 6 or np.abs(angle_to_x) - np.pi < np.pi / 6:
                         if ('z' in bbox_boundaries and 'y' in bbox_boundaries):
                             obj['gripper_over'] = True    
-                if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
+                if all([obj['bbox'][i][2] > 0.035 for i in range(8)]):
                     obj['raised'] = True
                     if obs['grasped_obj_idx'] == idx:
                         obj['weight'] = obs['weight_measurement']
@@ -2047,7 +2047,7 @@ class InferenceToolDebug:
                     elif np.abs(angle_to_x) < np.pi / 6 or np.abs(angle_to_x) - np.pi < np.pi / 6:
                         if ('z' in bbox_boundaries and 'y' in bbox_boundaries):
                             obj['gripper_over'] = True    
-                if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
+                if all([obj['bbox'][i][2] > 0.035 for i in range(8)]):
                     obj['raised'] = True
                 if obj['raised'] and obj['in_hand']:
                     obj['weight'] = obs['weight_measurement']
@@ -2097,7 +2097,7 @@ class InferenceToolDebug:
                     elif np.abs(angle_to_x) < np.pi / 6 or np.abs(angle_to_x) - np.pi < np.pi / 6:
                         if ('z' in bbox_boundaries and 'y' in bbox_boundaries):
                             obj['gripper_over'] = True           
-                if all([obj['bbox'][i][2] > 0.05 for i in range(8)]):
+                if all([obj['bbox'][i][2] > 0.035 for i in range(8)]):
                     obj['raised'] = True
                 if obj['raised'] and obj['in_hand']:
                     obj['weight'] = obs['weight_measurement']

@@ -1,0 +1,135 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000000.png",
+            "image_index": 0,
+            "instruction": "Measure the weight of the plastic object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        1
+                    ],
+                    "input_value": "plastic",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "type": "query_weight",
+                    "input": [
+                        1
+                    ],
+                    "input_value": null,
+                    "output": [
+                        46.0
+                    ]
+                }
+            ],
+            "template_id": "measure_weight_single",
+            "task_id": "measure_weight",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000001.png",
+            "image_index": 1,
+            "instruction": "What is the weight of the cylindrical object?",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "cylindrical",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "query_weight",
+                    "input": [
+                        2
+                    ],
+                    "input_value": null,
+                    "output": [
+                        36.0
+                    ]
+                }
+            ],
+            "template_id": "measure_weight_single",
+            "task_id": "measure_weight",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000002.png",
+            "image_index": 2,
+            "instruction": "Measure the weight of the brown object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "brown",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "query_weight",
+                    "input": [
+                        2
+                    ],
+                    "input_value": null,
+                    "output": [
+                        32.0
+                    ]
+                }
+            ],
+            "template_id": "measure_weight_single",
+            "task_id": "measure_weight",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}
