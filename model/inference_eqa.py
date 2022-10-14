@@ -21,7 +21,7 @@ from environment.actions import ActionExecutor
 from model.program_executor import ProgramStatus, ProgramExecutor
 
 from utils.utils import CyclicBuffer
-from utils.communication import ParamClient
+from utils.communication import ParamClient, ParamSubscriber
 
 from .ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM
 
@@ -1647,6 +1647,8 @@ class InferenceToolDebug:
         # self.scene = None
         self.blender_rendering = False
 
+        self._last_weight = None
+
     def setup(self,
               instruction_model_params={},
               visual_recognition_model_params={},
@@ -2455,7 +2457,8 @@ class InferenceToolDebug:
         gripper_close_perc = 0.5 * (finger1_perc_close + finger2_perc_close)
         gripper_action = 2 * gripper_close_perc - 1.0
         print(f'gripper_action: {gripper_action}')
-        weight_msg = self._weight_client
+        weight_msg = self._last_weight
+        # weight_msg = self._weight_client.wait_receive_param("F_ext", timeout=1000)
         z_force = weight_msg['wrench']['force']['z']
         weight = -z_force / 9.81
 
@@ -2565,12 +2568,21 @@ class InferenceToolDebug:
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
         self._socket_img_pose_msg = context.socket(zmq.REQ)
         self._socket_img_pose_msg.connect("tcp://127.0.0.1:5559")
-        self._weight_client = ParamClient(
+        
+        def update_params(parameter, data):
+            if parameter != "F_ext":
+                return
+            if data is None:
+                return
+            self._last_weight = data
+
+        self._weight_client = ParamSubscriber(
             addr='127.0.0.1',
             start_port=5560
         )
         self._weight_client.declare('F_ext')
         self._weight_client.subscribe('F_ext')
+        self._weight_client.set_callback(update_params)
 
         self.gripper_msg_prev = None
 
