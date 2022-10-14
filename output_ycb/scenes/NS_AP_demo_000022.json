@@ -4,11 +4,11 @@
   "image_filename": "NS_AP_demo_000022.png",
   "objects": [
     {
-      "file": "master_chef_can",
-      "name": "master chef can",
-      "shape": "cylindrical",
+      "file": "mustard_bottle",
+      "name": "mustard bottle",
+      "shape": "irregularly shaped",
       "size": "large",
-      "material": "metal",
+      "material": "plastic",
       "3d_coords": [
         0.48347747325897217,
         -0.16469870507717133,
@@ -26,19 +26,19 @@
         483,
         0.7057380080223083
       ],
-      "colour": "blue",
+      "colour": "yellow",
       "weight_gt": 57.0,
       "weight": null,
       "movability": "portable",
       "bbox": {
-        "x": 0.10239100456237793,
-        "y": 0.10231000185012817,
-        "z": 0.14016400277614594
+        "x": 0.09598095715045929,
+        "y": 0.058198802173137665,
+        "z": 0.1913120150566101
       },
       "scale_factor": 1.0,
-      "stackable": false,
-      "stack_base": true,
-      "pickupable": false,
+      "stackable": true,
+      "stack_base": false,
+      "pickupable": true,
       "mask": {
         "size": [
           720,

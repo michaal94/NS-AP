@@ -1661,9 +1661,10 @@ class InferenceToolDebug:
               env_timeout = 10000,
               disable_rendering = False, 
               save_dir = 'temp',
-              verbose = True
+              verbose = True,
+              move_robot = True
         ):
-        self.move_robot = True
+        self.move_robot = move_robot
         self.verbose = verbose
         self.save_dir = save_dir
         self.disable_rendering = disable_rendering
@@ -1671,7 +1672,8 @@ class InferenceToolDebug:
         self.env_timeout = env_timeout
         self.planning_timeout = planning_timeout
         self.environment_params = environment_params
-        self._setup_communication()
+        if self.move_robot:
+            self._setup_communication()
         self._setup_instruction_model(instruction_model_params)
         self._setup_visual_recognition_model(visual_recognition_model_params)
         self._setup_pose_model(pose_model_params)
@@ -1711,7 +1713,8 @@ class InferenceToolDebug:
             assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
             poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
             self.environment.apply_external_poses(poses_robot)
-        self.environment.render()
+        if not self.environment.blender_enabled:
+            self.environment.render()
         # print(poses_robot)
         # input()
 
