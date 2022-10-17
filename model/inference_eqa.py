@@ -1781,7 +1781,11 @@ class InferenceToolDebug:
         self.environment.print_robot_configuration()
         # input()
 
-        if self.environment.blender_enabled:
+        if self.move_robot:
+            observation_robot['action'] = ('START', None)
+            observation_robot['action_list'] = [('START', None)]
+            self.update_sequence_json(observation, ('START', None), observation_robot)
+        elif self.environment.blender_enabled:
             self.update_sequence_json(observation, ('START', None))
 
         if not self._check_gt_scene():
@@ -1940,7 +1944,11 @@ class InferenceToolDebug:
                         if not self._check_gt_scene():
                             print("Broken scene error")
                             return InferenceCode.BROKEN_SCENE
-                        if self.environment.blender_enabled:
+                        if self.move_robot:
+                            observation_robot['action'] = action_to_execute_robot
+                            observation_robot['action_list'] = action_plan_robot
+                            self.update_sequence_json(observation, action_to_execute, observation_robot)
+                        elif self.environment.blender_enabled:
                             self.update_sequence_json(observation, action_to_execute)
                     else:
                         print('Action not executed correctly')
@@ -2310,7 +2318,7 @@ class InferenceToolDebug:
         }
         return task
 
-    def update_sequence_json(self, obs, last_action=None):
+    def update_sequence_json(self, obs, last_action=None, obs_robot=None):
         if not self.environment.blender_enabled:
             return
         if self.obs_num == 0:
@@ -2327,6 +2335,8 @@ class InferenceToolDebug:
                 "image_paths": [],
                 "result": None
             }
+            if obs_robot is not None:
+                info_struct['observations_robot'] = []
             with open(self.json_path, 'w') as f:
                 json.dump(info_struct, f, indent=4)
 
@@ -2352,6 +2362,30 @@ class InferenceToolDebug:
             obs_set['objects'][-1]['ori'] = obs_set['objects'][-1]['ori'].tolist()
             if obs_set['objects'][-1]['weight'] is not None:
                 obs_set['objects'][-1]['weight'] = obs_set['objects'][-1]['weight'].tolist()
+
+        if obs_robot is not None:
+            obs_set_robot = {}
+            obs_set_robot['robot'] = {
+                'pos': obs_robot['robot0_eef_pos'],
+                'ori': obs_robot['robot0_eef_quat'],
+                'gripper_action': obs_robot['gripper_action'],
+                'gripper_closed': obs_robot['gripper_closed'],
+                'weight_measurement': obs_robot['weight_measurement']
+            }
+            if 'action' in obs_robot:
+                obs_set_robot['robot']['action'] = obs_robot['action']
+            if 'action_list' in obs_robot:
+                obs_set_robot['robot']['action_list'] = obs_robot['action_list']
+
+            obs_set_robot['objects'] = []
+            for obj in self.scene_graph_robot:
+                obs_set_robot['objects'].append(copy.deepcopy(obj))
+                obs_set_robot['objects'][-1]['bbox'] = obs_set_robot['objects'][-1]['bbox'].tolist()
+                obs_set_robot['objects'][-1]['pos'] = obs_set_robot['objects'][-1]['pos'].tolist()
+                obs_set_robot['objects'][-1]['ori'] = obs_set_robot['objects'][-1]['ori'].tolist()
+                if obs_set_robot['objects'][-1]['weight'] is not None:
+                    obs_set_robot['objects'][-1]['weight'] = obs_set_robot['objects'][-1]['weight']
+
 
         obs_set_gt = {}
         robot_body, gripper_body = self.environment.get_robot_configuration()
@@ -2387,6 +2421,7 @@ class InferenceToolDebug:
 
         info_struct['observations'].append(obs_set)
         info_struct['observations_gt'].append(obs_set_gt)
+        info_struct['observations_robot'].append(obs_set_robot)
         with open(self.json_path, 'w') as f:
             json.dump(info_struct, f, indent=4)
         self.obs_num += 1
