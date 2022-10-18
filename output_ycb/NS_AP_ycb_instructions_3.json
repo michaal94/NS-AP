@@ -1,0 +1,135 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000030.png",
+            "image_index": 30,
+            "instruction": "Place the cylindrical object on the right part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "cylindrical",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        2
+                    ]
+                }
+            ],
+            "template_id": "move_single",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000031.png",
+            "image_index": 31,
+            "instruction": "Move the brown object to the right part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "brown",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        2
+                    ]
+                }
+            ],
+            "template_id": "move_single",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000032.png",
+            "image_index": 32,
+            "instruction": "Place the plastic object on the right part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "plastic",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        2
+                    ]
+                }
+            ],
+            "template_id": "move_single",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}

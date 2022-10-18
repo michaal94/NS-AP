@@ -1,0 +1,183 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000040.png",
+            "image_index": 40,
+            "instruction": "Remove red objects from the right part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_table_part",
+                    "input": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "red",
+                    "output": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "left",
+                    "output": [
+                        1,
+                        2
+                    ]
+                }
+            ],
+            "template_id": "remove",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000041.png",
+            "image_index": 41,
+            "instruction": "Clean the right part of the table from all prismatic objects.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_table_part",
+                    "input": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        0,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "prismatic",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "left",
+                    "output": [
+                        2
+                    ]
+                }
+            ],
+            "template_id": "remove",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000042.png",
+            "image_index": 42,
+            "instruction": "Remove all metal objects from the left part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_table_part",
+                    "input": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ],
+                    "input_value": "left",
+                    "output": [
+                        0,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        0,
+                        2
+                    ],
+                    "input_value": "metal",
+                    "output": [
+                        0,
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        0,
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        0,
+                        2
+                    ]
+                }
+            ],
+            "template_id": "remove",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}
