@@ -117,7 +117,7 @@
             "split": "new",
             "image_filename": "NS_AP_demo_000052.png",
             "image_index": 52,
-            "instruction": "Move the heaviest of prismatic objects to the right part of the table.",
+            "instruction": "Move the heaviest of metal objects to the left part of the table.",
             "program": [
                 {
                     "input": null,
@@ -131,36 +131,36 @@
                     ]
                 },
                 {
-                    "type": "filter_shape",
+                    "type": "filter_material",
                     "input": [
-                        1,
-                        2
+                        0,
+                        3
                     ],
-                    "input_value": "prismatic",
+                    "input_value": "metal",
                     "output": [
-                        1,
-                        2
+                        0,
+                        3
                     ]
                 },
                 {
                     "type": "filter_weight",
                     "input": [
-                        1,
-                        2
+                        0,
+                        3
                     ],
                     "input_value": "heaviest",
                     "output": [
-                        1
+                        3
                     ]
                 },
                 {
                     "type": "move_to",
                     "input": [
-                        1
+                        3
                     ],
-                    "input_value": "right",
+                    "input_value": "left",
                     "output": [
-                        1
+                        3
                     ]
                 }
             ],
