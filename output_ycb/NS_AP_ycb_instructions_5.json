@@ -1,0 +1,174 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000050.png",
+            "image_index": 50,
+            "instruction": "Move the lightest of all prismatic objects to the left part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        0,
+                        1
+                    ],
+                    "input_value": "prismatic",
+                    "output": [
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        0,
+                        1
+                    ],
+                    "input_value": "lightest",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        1
+                    ],
+                    "input_value": "left",
+                    "output": [
+                        1
+                    ]
+                }
+            ],
+            "template_id": "move_weight",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000051.png",
+            "image_index": 51,
+            "instruction": "Place the lightest of red objects on the right part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "red",
+                    "output": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "lightest",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        2
+                    ]
+                }
+            ],
+            "template_id": "move_weight",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000052.png",
+            "image_index": 52,
+            "instruction": "Move the heaviest of prismatic objects to the right part of the table.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "prismatic",
+                    "output": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "heaviest",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "type": "move_to",
+                    "input": [
+                        1
+                    ],
+                    "input_value": "right",
+                    "output": [
+                        1
+                    ]
+                }
+            ],
+            "template_id": "move_weight",
+            "task_id": "move",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}
