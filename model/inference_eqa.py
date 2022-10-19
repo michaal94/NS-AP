@@ -1942,7 +1942,7 @@ class InferenceToolDebug:
                         if self.move_robot:
                             image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
                             poses_robot, bboxes_robot = self._align_robot_debug(
-                                scene_vis, labels_robot, poses_robot, bboxes_robot 
+                                scene_vis, labels_robot, poses_robot, bboxes_robot, observation_robot
                             )
                             image_robot.save(f'./output_shared/test_{counter}.png')
                             counter += 1
@@ -2748,7 +2748,7 @@ class InferenceToolDebug:
                     # print(pose_mat)
                     bbox_world = np.matmul(pose_mat, bbox_local)
                     bb_aligned[idx_missing] = bbox_world
-                    
+
         return p_aligned, bb_aligned
 
 
