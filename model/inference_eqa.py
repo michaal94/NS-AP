@@ -2501,7 +2501,7 @@ class InferenceToolDebug:
         finger2_perc_close = 1.0 - finger2_pos / finger_reach
         gripper_close_perc = 0.5 * (finger1_perc_close + finger2_perc_close)
         gripper_action = 2 * gripper_close_perc - 1.0
-        print(f'gripper_action: {gripper_action}')
+        # print(f'gripper_action: {gripper_action}')
         weight_msg = self._last_weight
         # weight_msg = self._weight_client.wait_receive_param("F_ext", timeout=1000)
         z_force = weight_msg['wrench']['force']['z']
@@ -2692,6 +2692,7 @@ class InferenceToolDebug:
                     self.prev_relative_pose[name] = (relative_pos, relative_ori)
             if len(missing) > 0:
                 print('Objects missing, filling with previous values')
+                print(missing)
                 gripper_action = obs['gripper_action']
                 gripper_on_obj = -0.98 < gripper_action < 0.98
                 # If gripper on any object:
@@ -2750,7 +2751,9 @@ class InferenceToolDebug:
                         # print(pose_mat)
                         bbox_world = np.matmul(pose_mat, bbox_local)
                         bb_aligned[idx_missing] = bbox_world
-
+        print('Poses, bboxes')
+        print(p_aligned)
+        print(bb_aligned)
         return p_aligned, bb_aligned
 
 
