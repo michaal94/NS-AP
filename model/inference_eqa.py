@@ -2730,24 +2730,26 @@ class InferenceToolDebug:
                     # The only tricky case is lack of detection after approach_grasp
                     # However, up to assumption of not having moved the object such
                     # that it is still not detected after moving we should be fine
-                    obj_pose = self.prev_pose[name]
-                    relative_pos = obj_pose[0] - pos_eef
-                    # world_in_eef * obj_in_world
-                    relative_ori = T.quat_multiply(world_in_eef, obj_pose[1])
-                    self.prev_relative_pose[name] = (relative_pos, relative_ori)
-                    p_aligned[idx_missing] = obj_pose
-                    bbox_xyz = COSYPOSE_BBOX[reverse_bbox_dict[name]]
-                    bbox_local = self._get_local_bounding_box(bbox_xyz)
-                    bbox_local = np.concatenate(
-                        (
-                            bbox_local.T,
-                            np.ones((bbox_local.shape[0], 1)).T
+                    for name in missing:
+                        idx_missing = obj_list.index(name)
+                        obj_pose = self.prev_pose[name]
+                        relative_pos = obj_pose[0] - pos_eef
+                        # world_in_eef * obj_in_world
+                        relative_ori = T.quat_multiply(world_in_eef, obj_pose[1])
+                        self.prev_relative_pose[name] = (relative_pos, relative_ori)
+                        p_aligned[idx_missing] = obj_pose
+                        bbox_xyz = COSYPOSE_BBOX[reverse_bbox_dict[name]]
+                        bbox_local = self._get_local_bounding_box(bbox_xyz)
+                        bbox_local = np.concatenate(
+                            (
+                                bbox_local.T,
+                                np.ones((bbox_local.shape[0], 1)).T
+                            )
                         )
-                    )
-                    pose_mat = T.pose2mat(p_aligned[idx_missing])
-                    # print(pose_mat)
-                    bbox_world = np.matmul(pose_mat, bbox_local)
-                    bb_aligned[idx_missing] = bbox_world
+                        pose_mat = T.pose2mat(p_aligned[idx_missing])
+                        # print(pose_mat)
+                        bbox_world = np.matmul(pose_mat, bbox_local)
+                        bb_aligned[idx_missing] = bbox_world
 
         return p_aligned, bb_aligned
 
