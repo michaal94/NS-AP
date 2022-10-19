@@ -2724,7 +2724,7 @@ class InferenceToolDebug:
                         )
                         pose_mat = T.pose2mat(p_aligned[idx_missing])
                         # print(pose_mat)
-                        bbox_world = np.matmul(pose_mat, bbox_local)
+                        bbox_world = np.matmul(pose_mat, bbox_local)[:-1, :].T
                         bb_aligned[idx_missing] = bbox_world
                 else:
                     # If gripper not on any object we copy the previous pose
@@ -2749,7 +2749,7 @@ class InferenceToolDebug:
                         )
                         pose_mat = T.pose2mat(p_aligned[idx_missing])
                         # print(pose_mat)
-                        bbox_world = np.matmul(pose_mat, bbox_local)
+                        bbox_world = np.matmul(pose_mat, bbox_local)[:-1, :].T
                         bb_aligned[idx_missing] = bbox_world
         print('Poses, bboxes')
         print(p_aligned)
