@@ -2668,7 +2668,7 @@ class InferenceToolDebug:
                 p_aligned.append(poses[idx])
                 bb_aligned.append(bboxes[idx])
                 self.prev_pose[name] = p_aligned
-                self.prev_pose_relative[name] = p_aligned
+                self.prev_relative_pose[name] = p_aligned
         else:
             reverse_bbox_dict = {
                 v: k for k, v in COSYPOSE2NAME.items()
