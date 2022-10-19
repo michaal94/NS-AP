@@ -1689,7 +1689,11 @@ class InferenceToolDebug:
         self.action_executor_robot = ActionExecutor(**action_executor_params)
         self.obs_num = 0
         self.last_render_path = None
-        self.loop_detector = CyclicBuffer(3)
+        self.loop_detector = CyclicBuffer(8)
+        self.prev_pose = None
+        self.prev_relative_pose = None
+        self.last_grasp_target = None
+        self.last_robot_act = None
 
     def run(self):
         assert self.instruction_model is not None, "Load instruction to program model (or set GT instruction mode) before running inference"
@@ -1882,6 +1886,12 @@ class InferenceToolDebug:
                             observation_robot,
                             self.scene_graph_robot
                         )
+                        self.last_robot_act = action_to_execute_robot[0]
+                        if self.last_robot_act == 'approach_grasp':
+                            self.last_grasp_target = action_to_execute_robot[1]
+                        if self.last_robot_act == 'release':
+                            self.last_grasp_target = None
+                        
                     action_executed = False
                     # action_executed_robot = False
                     for _ in range(self.env_timeout):
@@ -2562,8 +2572,9 @@ class InferenceToolDebug:
         objs = msg['objects']
         names, poses, bboxes = [], [], []
         for obj in objs:
-            names.append(COSYPOSE2NAME[obj['label']])
-            print(names[-1])
+            name = COSYPOSE2NAME[obj['label']]
+            names.append(name)
+            print(name)
             pose_cosypose = obj['pose']
             pos_cosy, ori_cosy = pose_cosypose
             pos_correction = np.matmul(
@@ -2645,13 +2656,99 @@ class InferenceToolDebug:
             ]
         )
 
-    def _align_robot_debug(self, scene, labels, poses, bboxes):
-        p_aligned, bb_aligned = [], []
-        for o in scene:
-            name = o['name']
-            idx = labels.index(name)
-            p_aligned.append(poses[idx])
-            bb_aligned.append(bboxes[idx])
+    def _align_robot_debug(self, scene, labels, poses, bboxes, obs=None):
+        obj_list = [o['name'] for o in scene]
+        if obs is None:
+            p_aligned, bb_aligned = [], []
+            self.prev_pose = {}
+            self.prev_relative_pose = {}
+            for o in scene:
+                name = o['name']
+                idx = labels.index(name)
+                p_aligned.append(poses[idx])
+                bb_aligned.append(bboxes[idx])
+                self.prev_pose[name] = p_aligned
+                self.prev_pose_relative[name] = p_aligned
+        else:
+            reverse_bbox_dict = {
+                v: k for k, v in COSYPOSE2NAME.items()
+            }
+            pos_eef = np.array(obs['robot0_eef_pos'])
+            ori_eef = np.array(obs['robot0_eef_quat'])
+            world_in_eef = T.quat_inverse(ori_eef)
+            p_aligned, bb_aligned = [None] * len(obj_list), [None] * len(obj_list)
+            missing = [name for name in obj_list]
+            # Fill correct
+            for i, name in enumerate(labels):
+                if name in obj_list:
+                    missing.remove(name)
+                    idx = obj_list.index(name)
+                    p_aligned[idx] = poses[i]
+                    bb_aligned[idx] = bboxes[i]
+                    self.prev_pose[name] = poses[i]
+                    relative_pos = poses[i][0] - pos_eef
+                    # world_in_eef * obj_in_world
+                    relative_ori = T.quat_multiply(world_in_eef, poses[i][1])
+                    self.prev_relative_pose[name] = (relative_pos, relative_ori)
+            if len(missing) > 0:
+                print('Objects missing, filling with previous values')
+                gripper_action = obs['gripper_action']
+                gripper_on_obj = -0.98 < gripper_action < 0.98
+                # If gripper on any object:
+                if gripper_on_obj:
+                    for name in missing:
+                        idx_missing = obj_list.index(name)
+                        if self.last_grasp_target is not None and self.last_grasp_target == idx_missing:
+                            # If we had previously approach grasp, get its target last known relative pose
+                            obj_rel_pose = self.prev_relative_pose[name]
+                            obj_pos = pos_eef + obj_rel_pose[0]
+                            obj_ori = T.quat_multiply(ori_eef, obj_rel_pose[1])
+                            self.prev_pose[name] = (obj_pos, obj_ori)
+                            p_aligned[idx_missing] = self.prev_pose[name]
+                        else:
+                            # If it's any other object, keep previous pose
+                            obj_pose = self.prev_pose[name]
+                            relative_pos = obj_pose[0] - pos_eef
+                            # world_in_eef * obj_in_world
+                            relative_ori = T.quat_multiply(world_in_eef, obj_pose[1])
+                            self.prev_relative_pose[name] = (relative_pos, relative_ori)
+                            p_aligned[idx_missing] = obj_pose
+                        bbox_xyz = COSYPOSE_BBOX[reverse_bbox_dict[name]]
+                        bbox_local = self._get_local_bounding_box(bbox_xyz)
+                        bbox_local = np.concatenate(
+                            (
+                                bbox_local.T,
+                                np.ones((bbox_local.shape[0], 1)).T
+                            )
+                        )
+                        pose_mat = T.pose2mat(p_aligned[idx_missing])
+                        # print(pose_mat)
+                        bbox_world = np.matmul(pose_mat, bbox_local)
+                        bb_aligned[idx_missing] = bbox_world
+                else:
+                    # If gripper not on any object we copy the previous pose
+                    # The only tricky case is lack of detection after approach_grasp
+                    # However, up to assumption of not having moved the object such
+                    # that it is still not detected after moving we should be fine
+                    obj_pose = self.prev_pose[name]
+                    relative_pos = obj_pose[0] - pos_eef
+                    # world_in_eef * obj_in_world
+                    relative_ori = T.quat_multiply(world_in_eef, obj_pose[1])
+                    self.prev_relative_pose[name] = (relative_pos, relative_ori)
+                    p_aligned[idx_missing] = obj_pose
+                    bbox_xyz = COSYPOSE_BBOX[reverse_bbox_dict[name]]
+                    bbox_local = self._get_local_bounding_box(bbox_xyz)
+                    bbox_local = np.concatenate(
+                        (
+                            bbox_local.T,
+                            np.ones((bbox_local.shape[0], 1)).T
+                        )
+                    )
+                    pose_mat = T.pose2mat(p_aligned[idx_missing])
+                    # print(pose_mat)
+                    bbox_world = np.matmul(pose_mat, bbox_local)
+                    bb_aligned[idx_missing] = bbox_world
+                    
         return p_aligned, bb_aligned
 
 
