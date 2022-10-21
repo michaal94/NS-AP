@@ -1689,7 +1689,7 @@ class InferenceToolDebug:
         self.action_executor_robot = ActionExecutor(**action_executor_params)
         self.obs_num = 0
         self.last_render_path = None
-        self.loop_detector = CyclicBuffer(8)
+        self.loop_detector = CyclicBuffer(2)
         self.prev_pose = None
         self.prev_relative_pose = None
         self.last_grasp_target = None
@@ -2431,7 +2431,8 @@ class InferenceToolDebug:
 
         info_struct['observations'].append(obs_set)
         info_struct['observations_gt'].append(obs_set_gt)
-        info_struct['observations_robot'].append(obs_set_robot)
+        if self.move_robot:
+            info_struct['observations_robot'].append(obs_set_robot)
         with open(self.json_path, 'w') as f:
             json.dump(info_struct, f, indent=4)
         self.obs_num += 1

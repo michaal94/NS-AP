@@ -204,8 +204,8 @@ class ActionExecutor:
             obj_y_dir = obj_mat[:, 1]
             obj_x_dir = obj_mat[:, 0]
             angle_to_z = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-            angle_to_y = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
-            angle_to_x = self._angle_between(obj_z_dir, np.array([0, 0, 1]))
+            angle_to_y = self._angle_between(obj_y_dir, np.array([0, 0, 1]))
+            angle_to_x = self._angle_between(obj_x_dir, np.array([0, 0, 1]))
             # PRINT HERE
             # print(obj_z_dir)
             if np.abs(angle_to_z) < self.angle_up_tolerance or np.abs(angle_to_z - np.pi)< self.angle_up_tolerance:

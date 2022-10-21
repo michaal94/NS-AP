@@ -1,0 +1,275 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000080.png",
+            "image_index": 80,
+            "instruction": "Place the mustard bottle on top of the bowl on top of the prismatic object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        1
+                    ],
+                    "input_value": "mustard bottle",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "bowl",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "prismatic",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            1
+                        ],
+                        [
+                            0
+                        ],
+                        [
+                            2
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_three",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000081.png",
+            "image_index": 81,
+            "instruction": "Place the brown object on the potted meat can on the red object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        1
+                    ],
+                    "input_value": "brown",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "potted meat can",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "red",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_three",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000082.png",
+            "image_index": 82,
+            "instruction": "Place the tomato soup can on top of the sponge object on top of the bowl.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        3
+                    ],
+                    "input_value": "tomato soup can",
+                    "output": [
+                        3
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        1
+                    ],
+                    "input_value": "sponge",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "bowl",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            3
+                        ],
+                        [
+                            1
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_three",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}

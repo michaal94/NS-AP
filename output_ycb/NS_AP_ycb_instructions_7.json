@@ -1,0 +1,244 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000070.png",
+            "image_index": 70,
+            "instruction": "Place the heaviest of metal objects on top of the cracker box.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "metal",
+                    "output": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "heaviest",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "cracker box",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            1
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_weight",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000071.png",
+            "image_index": 71,
+            "instruction": "Place the lightest of all red objects on top of the paper object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        0,
+                        1
+                    ],
+                    "input_value": "red",
+                    "output": [
+                        0,
+                        1
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        0,
+                        1
+                    ],
+                    "input_value": "lightest",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "paper",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            1
+                        ],
+                        [
+                            2
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_weight",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000072.png",
+            "image_index": 72,
+            "instruction": "Stack the heaviest of all prismatic objects on the red object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "prismatic",
+                    "output": [
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_weight",
+                    "input": [
+                        1,
+                        2
+                    ],
+                    "input_value": "heaviest",
+                    "output": [
+                        1
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "red",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            1
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_weight",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}

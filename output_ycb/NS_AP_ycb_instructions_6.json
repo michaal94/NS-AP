@@ -1,0 +1,205 @@
+{
+    "info": {},
+    "instructions": [
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000060.png",
+            "image_index": 60,
+            "instruction": "Stack the sponge object on the yellow object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "sponge",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "yellow",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            2
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_simple",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000061.png",
+            "image_index": 61,
+            "instruction": "Place the brown object on the cylindrical object.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_colour",
+                    "input": [
+                        2
+                    ],
+                    "input_value": "brown",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "cylindrical",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            2
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_simple",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000062.png",
+            "image_index": 62,
+            "instruction": "Stack the cylindrical object on top of the bowl.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_shape",
+                    "input": [
+                        3
+                    ],
+                    "input_value": "cylindrical",
+                    "output": [
+                        3
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_name",
+                    "input": [
+                        0
+                    ],
+                    "input_value": "bowl",
+                    "output": [
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            3
+                        ],
+                        [
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_simple",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}
