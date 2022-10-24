@@ -1854,9 +1854,9 @@ class InferenceToolDebug:
                             self.scene_graph_robot
                         )
                     print(action_plan, action_plan_robot)
-                    if self._detect_loop(action_plan):
-                        print('Loop detected, exiting')
-                        return InferenceCode.LOOP_ERROR
+                    # if self._detect_loop(action_plan):
+                    #     print('Loop detected, exiting')
+                    #     return InferenceCode.LOOP_ERROR
                     self.loop_detector.append(action_plan)
                     if len(action_plan) == 0 and len(action_plan_robot) == 0:
                         if program_status == ProgramStatus.ACTION:
