@@ -127,7 +127,7 @@ def main(args):
         action_planner_params=action_planner_params,
         disable_rendering=False,
         save_dir=save_dir,
-        move_robot=False
+        move_robot=True
     )
 
     inference_tool.load_scene_gt(scene)
