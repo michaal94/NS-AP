@@ -2406,28 +2406,48 @@ class InferenceToolDebug:
             gripper_body[k] = (v[0].tolist(), v[1].tolist())
 
         masks = self.environment.get_segmentation_masks()
-        obs_set_gt['robot'] = {
-            'pos': obs['robot0_eef_pos'].tolist(),
-            'ori': obs['robot0_eef_quat'].tolist(),
-            'gripper_action': obs['gripper_action'].tolist(),
-            'gripper_closed': obs['gripper_closed'].tolist(),
-            'weight_measurement': obs['weight_measurement'].tolist(),
-            'grasped_obj_idx': obs['grasped_obj_idx'].tolist(),
-            'robot_body': robot_body,
-            'gripper_body': gripper_body,
-            'robot_mask': masks['robot'],
-            'table_mask': masks['table']
-        }
+        if masks is None:
+            obs_set_gt['robot'] = {
+                'pos': obs['robot0_eef_pos'].tolist(),
+                'ori': obs['robot0_eef_quat'].tolist(),
+                'gripper_action': obs['gripper_action'].tolist(),
+                'gripper_closed': obs['gripper_closed'].tolist(),
+                'weight_measurement': obs['weight_measurement'].tolist(),
+                'grasped_obj_idx': obs['grasped_obj_idx'].tolist(),
+                'robot_body': robot_body,
+                'gripper_body': gripper_body
+            }
+        else:
+            obs_set_gt['robot'] = {
+                'pos': obs['robot0_eef_pos'].tolist(),
+                'ori': obs['robot0_eef_quat'].tolist(),
+                'gripper_action': obs['gripper_action'].tolist(),
+                'gripper_closed': obs['gripper_closed'].tolist(),
+                'weight_measurement': obs['weight_measurement'].tolist(),
+                'grasped_obj_idx': obs['grasped_obj_idx'].tolist(),
+                'robot_body': robot_body,
+                'gripper_body': gripper_body,
+                'robot_mask': masks['robot'],
+                'table_mask': masks['table']
+            }
 
         obs_set_gt['objects'] = []
         for i, obj in enumerate(self.scene_graph_gt):
-            obs_set_gt['objects'].append(copy.deepcopy(obj))
-            obs_set_gt['objects'][i]['mask'] = masks['objects'][i]
-            obs_set_gt['objects'][-1]['bbox'] = obs_set_gt['objects'][-1]['bbox'].tolist()
-            obs_set_gt['objects'][-1]['pos'] = obs_set_gt['objects'][-1]['pos'].tolist()
-            obs_set_gt['objects'][-1]['ori'] = obs_set_gt['objects'][-1]['ori'].tolist()
-            if obs_set_gt['objects'][-1]['weight'] is not None:
-                obs_set_gt['objects'][-1]['weight'] = obs_set_gt['objects'][-1]['weight'].tolist()
+            if masks is None:
+                obs_set_gt['objects'].append(copy.deepcopy(obj))
+                obs_set_gt['objects'][-1]['bbox'] = obs_set_gt['objects'][-1]['bbox'].tolist()
+                obs_set_gt['objects'][-1]['pos'] = obs_set_gt['objects'][-1]['pos'].tolist()
+                obs_set_gt['objects'][-1]['ori'] = obs_set_gt['objects'][-1]['ori'].tolist()
+                if obs_set_gt['objects'][-1]['weight'] is not None:
+                    obs_set_gt['objects'][-1]['weight'] = obs_set_gt['objects'][-1]['weight'].tolist()
+            else:
+                obs_set_gt['objects'].append(copy.deepcopy(obj))
+                obs_set_gt['objects'][i]['mask'] = masks['objects'][i]
+                obs_set_gt['objects'][-1]['bbox'] = obs_set_gt['objects'][-1]['bbox'].tolist()
+                obs_set_gt['objects'][-1]['pos'] = obs_set_gt['objects'][-1]['pos'].tolist()
+                obs_set_gt['objects'][-1]['ori'] = obs_set_gt['objects'][-1]['ori'].tolist()
+                if obs_set_gt['objects'][-1]['weight'] is not None:
+                    obs_set_gt['objects'][-1]['weight'] = obs_set_gt['objects'][-1]['weight'].tolist()
 
 
         info_struct['observations'].append(obs_set)
