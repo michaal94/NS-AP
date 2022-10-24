@@ -2379,9 +2379,9 @@ class InferenceToolDebug:
             obs_set_robot['robot'] = {
                 'pos': obs_robot['robot0_eef_pos'].tolist(),
                 'ori': obs_robot['robot0_eef_quat'].tolist(),
-                'gripper_action': obs_robot['gripper_action'].tolist(),
-                'gripper_closed': obs_robot['gripper_closed'].tolist(),
-                'weight_measurement': obs_robot['weight_measurement'].tolist()
+                'gripper_action': obs_robot['gripper_action'],
+                'gripper_closed': obs_robot['gripper_closed'],
+                'weight_measurement': obs_robot['weight_measurement']
             }
             if 'action' in obs_robot:
                 obs_set_robot['robot']['action'] = obs_robot['action']
