@@ -2329,7 +2329,7 @@ class InferenceToolDebug:
         return task
 
     def update_sequence_json(self, obs, last_action=None, obs_robot=None):
-        if not self.environment.blender_enabled:
+        if not self.environment.blender_enabled and not self.move_robot:
             return
         if self.obs_num == 0:
             json_name = "sequence.json"
@@ -2353,7 +2353,8 @@ class InferenceToolDebug:
         with open(self.json_path, 'r') as f:
             info_struct = json.load(f)
 
-        info_struct['image_paths'].append(self.last_render_path)
+        if self.environment.blender_enabled:
+            info_struct['image_paths'].append(self.last_render_path)
         obs_set = {}
         obs_set['robot'] = {
             'pos': obs['robot0_eef_pos'].tolist(),
