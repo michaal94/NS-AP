@@ -1,2 +1,4 @@
 scene_generation/data/base_scene_panda.blend filter=lfs diff=lfs merge=lfs -text
 scene_generation/data/base_scene_panda_w_gripper.blend filter=lfs diff=lfs merge=lfs -text
+scene_generation/data/base_scene_panda_w_gripper_cp.blend filter=lfs diff=lfs merge=lfs -text
+scene_generation/data/base_scene_panda_w_gripper.blend1 filter=lfs diff=lfs merge=lfs -text
