@@ -8,8 +8,9 @@
     "render_num_samples": 64,
     "render_min_bounces": 8,
     "render_max_bounces": 8,
-    "width": 848,
-    "height": 480,
+    "width": 1280,
+    "height": 720,
     "use_gpu": true,
-    "use_optix": false
+    "use_optix": false,
+    "cam_from_ycb": true
   }

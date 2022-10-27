@@ -55,22 +55,34 @@ class BlenderRenderer:
         color_name_to_rgba['white'] = [0.88, 0.88, 0.88, 1.0]
         self.color_name_to_rgba = color_name_to_rgba
         self.shape_dir = config['shape_dir']
+        if 'cam_from_ycb' in config:
+            self.cam_from_ycb = config['cam_from_ycb']
+        else:
+            self.cam_from_ycb = False
 
     def init_scene(self, scene):
-        # Match camera to scene data
-        bpy.context.scene.camera = bpy.data.objects['cam0']
-        bpy.data.objects['cam0'].location = scene['camera_params']['position']
-        if 'Euler' in scene['camera_params']['rotation_mode']:
-            # print('asdf00')
-            # exit()
-            rotation_mode = scene['camera_params']['rotation_mode'][5:]
-            bpy.data.objects['cam0'].rotation_mode = rotation_mode
-            bpy.data.objects['cam0'].rotation_euler = [
-                np.deg2rad(x) for x in scene['camera_params']['rotation']
-            ]
+        if self.cam_from_ycb:
+            from model.ycb_data import CAMERA_DATA
+            # Match camera to scene data
+            bpy.context.scene.camera = bpy.data.objects['cam1']
+            bpy.data.objects['cam1'].location = CAMERA_DATA['extrinsic']['pos']
+            bpy.data.objects['cam1'].rotation_mode = 'QUATERNION'
+            bpy.data.objects['cam1'].rotation_quaternion = CAMERA_DATA['extrinsic']['ori']
         else:
-            bpy.data.objects['cam0'].rotation_mode = 'Quaternion'
-            bpy.data.objects['cam0'].rotation_euler = scene['camera_params']['rotation']
+            # Match camera to scene data
+            bpy.context.scene.camera = bpy.data.objects['cam0']
+            bpy.data.objects['cam0'].location = scene['camera_params']['position']
+            if 'Euler' in scene['camera_params']['rotation_mode']:
+                # print('asdf00')
+                # exit()
+                rotation_mode = scene['camera_params']['rotation_mode'][5:]
+                bpy.data.objects['cam0'].rotation_mode = rotation_mode
+                bpy.data.objects['cam0'].rotation_euler = [
+                    np.deg2rad(x) for x in scene['camera_params']['rotation']
+                ]
+            else:
+                bpy.data.objects['cam0'].rotation_mode = 'Quaternion'
+                bpy.data.objects['cam0'].rotation_euler = scene['camera_params']['rotation']
 
         if 'lamp_params' in scene:
             for k, v in scene['lamp_params'].items():
