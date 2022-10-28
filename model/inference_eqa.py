@@ -1131,7 +1131,7 @@ class InferenceToolDebug:
                     idx = obj_list.index(name)
                     p_aligned[idx] = poses[i]
                     bb_aligned[idx] = bboxes[i]
-                    self.prev_pose[name] = poses[i]
+                    self.prev_pose[name] = copy.deepcopy(poses[i])
                     relative_pos = poses[i][0] - pos_eef
                     # world_in_eef * obj_in_world
                     relative_ori = T.quat_multiply(world_in_eef, poses[i][1])
