@@ -1115,6 +1115,7 @@ class InferenceToolDebug:
                 self.prev_pose[name] = poses[idx]
                 self.prev_relative_pose[name] = poses[idx]
         else:
+            print(self.prev_pose)
             reverse_bbox_dict = {
                 v: k for k, v in COSYPOSE2NAME.items()
             }
@@ -1182,11 +1183,13 @@ class InferenceToolDebug:
                         print(f'Gripper open, filling {name} with last known')
                         idx_missing = obj_list.index(name)
                         obj_pose = self.prev_pose[name]
+                        print(obj_pose)
                         relative_pos = obj_pose[0] - pos_eef
                         # world_in_eef * obj_in_world
                         relative_ori = T.quat_multiply(world_in_eef, obj_pose[1])
                         self.prev_relative_pose[name] = (relative_pos, relative_ori)
                         p_aligned[idx_missing] = obj_pose
+                        print(p_aligned[idx_missing])
                         bbox_xyz = COSYPOSE_BBOX[reverse_bbox_dict[name]]
                         bbox_local = self._get_local_bounding_box(bbox_xyz)
                         bbox_local = np.concatenate(
