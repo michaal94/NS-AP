@@ -1202,4 +1202,5 @@ class InferenceToolDebug:
         print('Poses, bboxes')
         print(p_aligned)
         print(bb_aligned)
+        print(self.prev_pose)
         return p_aligned, bb_aligned
