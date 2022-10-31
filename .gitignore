@@ -138,3 +138,4 @@ test/
 output_ycb/NS_AP_demo*
 temp_obj.xml
 output_ycb_blender/
+*.blend1

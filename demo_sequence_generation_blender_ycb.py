@@ -30,6 +30,8 @@ parser.add_argument(
     '--output_dir', default=''
 )
 
+view_mujoco = True
+
 def main(args):
     assert args.input_scene_dir != ''
     assert args.input_instruction_json != ''
@@ -83,7 +85,7 @@ def main(args):
             "return_bboxes":True,
             "debug":True,
             "list_obj_properties":True,
-            "has_renderer": False,
+            "has_renderer": view_mujoco,
             "blender_render": True,
             "output_render_path": f'output/temp',
             "blender_config_path": "./environment/blender_eqa_cfg.json",
@@ -126,7 +128,8 @@ def main(args):
         pose_model_params=pose_model_params,
         action_planner_params=action_planner_params,
         disable_rendering=False,
-        save_dir=save_dir
+        save_dir=save_dir,
+        view_mujoco=view_mujoco
     )
 
     inference_tool.load_scene_gt(scene)

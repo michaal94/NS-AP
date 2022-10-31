@@ -87,6 +87,7 @@ class InferenceToolBlender:
               disable_rendering = False, 
               save_dir = 'temp',
               verbose = True,
+              view_mujoco=False
         ):
         self.verbose = verbose
         self.save_dir = save_dir
@@ -115,6 +116,7 @@ class InferenceToolBlender:
         self.prev_relative_pose = None
         self.last_grasp_target = None
         self.last_robot_act = None
+        self.view_mujoco = view_mujoco
 
     def run(self):
         assert self.instruction_model is not None, "Load instruction to program model (or set GT instruction mode) before running inference"
@@ -155,6 +157,8 @@ class InferenceToolBlender:
             image_path = self.environment.blender_render()
             self.last_render_path = image_path
             image = self._load_image(image_path)
+            if self.view_mujoco:
+                self.environment.render()
         else:
             # Without blender we don't use the environment to output images
             # Rather for debugging
@@ -163,7 +167,6 @@ class InferenceToolBlender:
                 self.environment.render()
             image = None
         # input()
-
 
         
         # print(poses, poses_robot)
@@ -175,7 +178,7 @@ class InferenceToolBlender:
 
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
         # poses, bboxes = self.pose_model.get_pose(image, observation)
-        labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection()
+        labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection(os.path.abspath(image_path))
         counter = 1
         assert len(scene_vis_gt) == len(poses_cosy), 'Incorrect size'
         poses, bboxes = self._align_cosy_poses(scene_vis_gt, labels_cosy, poses_cosy, bboxes_cosy)
@@ -275,6 +278,10 @@ class InferenceToolBlender:
                         if not self.environment.blender_enabled:
                             if not self.disable_rendering:
                                 self.environment.render()
+                        else:
+                            if self.view_mujoco:
+                                self.environment.render()
+
                         self.previous_gripper_action = action[6]
                         
                     if action_executed:
@@ -283,10 +290,10 @@ class InferenceToolBlender:
                             self.last_render_path = image_path
                             image = self._load_image(image_path)
                         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
-                        poses, bboxes = self.pose_model.get_pose(image, observation)
+                        # poses, bboxes = self.pose_model.get_pose(image, observation)
 
-                        labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection()
-                        poses_cosy, bboxes_cosy = self._align_cosy_poses(
+                        labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection(os.path.abspath(image_path))
+                        poses, bboxes = self._align_cosy_poses(
                             scene_vis, labels_cosy, poses_cosy, bboxes_cosy, observation
                         )
                         
@@ -682,8 +689,6 @@ class InferenceToolBlender:
                 "image_paths": [],
                 "result": None
             }
-            if obs_robot is not None:
-                info_struct['observations_robot'] = []
             with open(self.json_path, 'w') as f:
                 json.dump(info_struct, f, indent=4)
 
