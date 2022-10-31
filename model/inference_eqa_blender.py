@@ -7,6 +7,7 @@ import numpy as np
 
 import zmq
 from PIL import Image
+from collections import Counter
 
 from robosuite import load_controller_config
 import robosuite.utils.transform_utils as T
@@ -179,9 +180,8 @@ class InferenceToolBlender:
         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
         # poses, bboxes = self.pose_model.get_pose(image, observation)
         labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection(os.path.abspath(image_path))
-        counter = 1
-        assert len(scene_vis_gt) == len(poses_cosy), 'Incorrect size'
         poses, bboxes = self._align_cosy_poses(scene_vis_gt, labels_cosy, poses_cosy, bboxes_cosy)
+        assert len(scene_vis_gt) == len(poses), 'Incorrect size'
 
 
         self.scene_graph = self._make_scene_graph(scene_vis, poses, bboxes)
@@ -334,10 +334,6 @@ class InferenceToolBlender:
                 obj['gripper_over'] = False
                 bbox_boundaries = self._check_eef_in_bbox(obj, eef_pos)
                 finger_in_bbox = self._check_finger_in_bbox(obj, eef_pos, eef_ori)
-                # print(obj['name'], finger_in_bbox)
-                # print(bbox_boundaries)
-                # print(gripper_closed)
-                # print(gripper_action)
                 if len(bbox_boundaries) == 3 or finger_in_bbox:
                     if gripper_closed and gripper_action > -0.99:
                         obj['in_hand'] = True
@@ -894,13 +890,27 @@ class InferenceToolBlender:
             p_aligned, bb_aligned = [None] * len(obj_list), [None] * len(obj_list)
             missing = [name for name in obj_list]
             # Fill correct
+            cnt = Counter(labels)
             for i, name in enumerate(labels):
+                if cnt[name] > 1:
+                    continue
                 if name in obj_list:
+                    skip = False
+                    for obj in self.scene_graph:
+                        if obj['name'] == name:
+                            if obj['gripper_over']:
+                                skip = True
+                        if self.last_grasp_target is not None:
+                            if obj_list[self.last_grasp_target] == name:
+                                if obs['gripper_closed']:
+                                    skip = True
+                    if skip:
+                        continue
                     missing.remove(name)
                     idx = obj_list.index(name)
                     p_aligned[idx] = poses[i]
                     bb_aligned[idx] = bboxes[i]
-                    self.prev_pose[name] = poses[i]
+                    self.prev_pose[name] = copy.deepcopy(poses[i])
                     relative_pos = poses[i][0] - pos_eef
                     # world_in_eef * obj_in_world
                     relative_ori = T.quat_multiply(world_in_eef, poses[i][1])
@@ -915,6 +925,7 @@ class InferenceToolBlender:
                     for name in missing:
                         idx_missing = obj_list.index(name)
                         if self.last_grasp_target is not None and self.last_grasp_target == idx_missing:
+                            print(f'Gripper closed, filling {name} with relative to gripper')
                             # If we had previously approach grasp, get its target last known relative pose
                             obj_rel_pose = self.prev_relative_pose[name]
                             obj_pos = pos_eef + obj_rel_pose[0]
@@ -923,6 +934,7 @@ class InferenceToolBlender:
                             p_aligned[idx_missing] = self.prev_pose[name]
                         else:
                             # If it's any other object, keep previous pose
+                            print(f'Gripper closed, filling {name} with last known')
                             obj_pose = self.prev_pose[name]
                             relative_pos = obj_pose[0] - pos_eef
                             # world_in_eef * obj_in_world
@@ -947,6 +959,7 @@ class InferenceToolBlender:
                     # However, up to assumption of not having moved the object such
                     # that it is still not detected after moving we should be fine
                     for name in missing:
+                        print(f'Gripper open, filling {name} with last known')
                         idx_missing = obj_list.index(name)
                         obj_pose = self.prev_pose[name]
                         relative_pos = obj_pose[0] - pos_eef
@@ -1005,19 +1018,21 @@ class InferenceToolBlender:
             )
             pose_in_base[2, 3] = max(pose_in_base[2, 3], 0.0)
 
-
-            bbox_xyz = COSYPOSE_BBOX[label]
-            bbox_local = self._get_local_bounding_box(bbox_xyz)
-            bbox_local = np.concatenate(
-                (
-                    bbox_local.T,
-                    np.ones((bbox_local.shape[0], 1)).T
+            if label in COSYPOSE_BBOX:
+                bbox_xyz = COSYPOSE_BBOX[label]
+                bbox_local = self._get_local_bounding_box(bbox_xyz)
+                bbox_local = np.concatenate(
+                    (
+                        bbox_local.T,
+                        np.ones((bbox_local.shape[0], 1)).T
+                    )
                 )
-            )
-            # print(pose_mat)
-            bbox_world = np.matmul(pose_in_base, bbox_local)
+                # print(pose_mat)
+                bbox_world = np.matmul(pose_in_base, bbox_local)[:-1, :].T
+            else:
+                bbox_world = None
             poses.append(T.mat2pose(pose_in_base))
-            bboxes.append(bbox_world[:-1, :].T)
+            bboxes.append(bbox_world)
             print(name)
             print(poses[-1])
 
