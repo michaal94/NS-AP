@@ -23,7 +23,7 @@ from model.program_executor import ProgramStatus, ProgramExecutor
 from utils.utils import CyclicBuffer
 from utils.communication import ParamClient, ParamSubscriber
 
-from .ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM
+from .ycb_data import COSYPOSE2NAME, COSYPOSE_BBOX, COSYPOSE_TRANSFORM_DEFAULT, CAMERA_DATA
 
 class InferenceCode:
     CORRECT_ANSWER = 0
@@ -130,40 +130,25 @@ class InferenceToolBlender:
         # Setup environment
         self._setup_environment()
 
-        scene_vis_gt = self.visual_recognition_model_gt.get_scene(None, None, self.scene_gt)
-
-        # First from robot
-        if self.move_robot:   
-            image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-            image_robot.save('./output_shared/test_0.png')
-            counter = 1
-            assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
-            poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
-            self.environment.apply_external_poses(poses_robot)
-        if not self.environment.blender_enabled:
-            self.environment.render()
-        # print(poses_robot)
-        # input()
-
         # Run some iteration to apply gravity to objects
         action = self.default_environment_action
         _, _, _, _ = self.environment.step(action)
         observation, _, _, _ = self.environment.step(action)
-        if self.move_robot:
-            observation_robot = self._get_observation_robot(observation)
+
+
         # input()
         #DEBUG
         self.action_executor.env = self.environment
         self.action_executor.use_ycb_grasps = True
         # self.action_executor.interpolate_free_movement = True
-        self.action_executor_robot.env = self.environment
-        self.action_executor_robot.interpolate_free_movement = True
-        self.action_executor_robot.decouple = False
-        self.action_executor_robot.eps_move_l1_ori = np.pi / 45
-        self.action_executor_robot.use_ycb_grasps = True
+        # self.action_executor_robot.env = self.environment
+        # self.action_executor_robot.interpolate_free_movement = True
+        # self.action_executor_robot.decouple = False
+        # self.action_executor_robot.eps_move_l1_ori = np.pi / 45
+        # self.action_executor_robot.use_ycb_grasps = True
 
-        self.previous_gripper_action = -1.0
-        self.previous_gripper_action_robot = -1.0
+        # self.previous_gripper_action = -1.0
+        # self.previous_gripper_action_robot = -1.0
 
         # Get first image
         if self.environment.blender_enabled:
@@ -179,38 +164,30 @@ class InferenceToolBlender:
             image = None
         # input()
 
-        poses, bboxes = self.pose_model.get_pose(image, observation)
-        poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
+
         
         # print(poses, poses_robot)
 
         # exit()
 
         scene_vis = self.visual_recognition_model.get_scene(image, None, self.scene_gt)
-        
+        scene_vis_gt = self.visual_recognition_model_gt.get_scene(None, None, self.scene_gt)
 
-        # print(scene_vis)
-        # exit()
+        poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
+        # poses, bboxes = self.pose_model.get_pose(image, observation)
+        labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection()
+        counter = 1
+        assert len(scene_vis_gt) == len(poses_cosy), 'Incorrect size'
+        poses, bboxes = self._align_cosy_poses(scene_vis_gt, labels_cosy, poses_cosy, bboxes_cosy)
+
 
         self.scene_graph = self._make_scene_graph(scene_vis, poses, bboxes)
         self.scene_graph_gt = self._make_scene_graph(scene_vis_gt, poses_gt, bboxes_gt)
 
-        if self.move_robot:
-            self.scene_graph_robot = self._make_scene_graph(scene_vis, poses_robot, bboxes_robot)
-        
-        print(f'Move robot: {self.move_robot}')
-        # print(self.scene_graph)
-        # print(self.scene_graph_robot)
-        # exit()
 
         self.environment.print_robot_configuration()
-        # input()
 
-        if self.move_robot:
-            observation_robot['action'] = ('START', None)
-            observation_robot['action_list'] = [('START', None)]
-            self.update_sequence_json(observation, ('START', None), observation_robot)
-        elif self.environment.blender_enabled:
+        if self.environment.blender_enabled:
             self.update_sequence_json(observation, ('START', None))
 
         if not self._check_gt_scene():
@@ -223,10 +200,6 @@ class InferenceToolBlender:
         action_plan_robot = []
 
         for _ in range(self.timeout):
-            # self.scene_graph[0]['weight'] = np.array(160)
-            # self.scene_graph[1]['weight'] = np.array(140)
-            # self.scene_graph[2]['weight'] = np.array(113.6)
-            # self.scene_graph[3]['weight'] = np.array(163.4)
             program_output = self.program_executor.execute(self.scene_graph, program_list)
             self.loop_detector.flush()
             # input()
@@ -251,35 +224,16 @@ class InferenceToolBlender:
             if program_status == ProgramStatus.ACTION or program_status == ProgramStatus.FINAL_ACTION:
                 planning_tout = self.planning_timeout * len(program_output['ACTION']['target'])
                 for _ in range(planning_tout):
-                    # print(self.scene_graph[0]['in_hand'])
-                    # print(self.scene_graph[0]['gripper_over'])
-                    # print(self.scene_graph[0]['approached'])
-                    # print(self.scene_graph[0]['raised'])
-                    # print(self.scene_graph[1]['in_hand'])
-                    # print(self.scene_graph[1]['gripper_over'])
-                    # print(self.scene_graph[1]['approached'])
-                    # print(self.scene_graph[1]['raised'])
-                    # print(observation['robot0_eef_pos'])
-                    # input()
-                    # print(self.scene_graph_gt[2]['in_hand'], self.scene_graph_gt[2]['raised'])
-                    # print(self.scene_graph[2]['in_hand'], self.scene_graph[2]['raised'])
-                    # self.scene_graph[2]['in_hand'] = True
-                    # self.scene_graph[2]['raised'] = True
                     action_plan = self.action_planner.get_action_sequence(
                         program_output['ACTION'],
                         self.scene_graph
                     )
-                    if self.move_robot:
-                        action_plan_robot = self.action_planner.get_action_sequence(
-                            program_output['ACTION'],
-                            self.scene_graph_robot
-                        )
-                    print(action_plan, action_plan_robot)
+                    print(action_plan)
                     # if self._detect_loop(action_plan):
                     #     print('Loop detected, exiting')
                     #     return InferenceCode.LOOP_ERROR
                     self.loop_detector.append(action_plan)
-                    if len(action_plan) == 0 and len(action_plan_robot) == 0:
+                    if len(action_plan) == 0:
                         if program_status == ProgramStatus.ACTION:
                             break
                         if self._check_task_completion(self._get_task_from_instruction(), observation):
@@ -291,95 +245,57 @@ class InferenceToolBlender:
                         else:
                             print('Task not reached target')
                             return InferenceCode.TASK_FAILURE
-                    if len(action_plan) > 0:
-                        action_to_execute = action_plan[0]
-                        self.action_executor.set_action(
-                            action_to_execute[0], 
-                            action_to_execute[1],
-                            observation,
-                            self.scene_graph
-                        )
-                    if len(action_plan_robot) > 0:
-                        action_to_execute_robot = action_plan_robot[0]
-                        self.action_executor_robot.set_action(
-                            action_to_execute_robot[0], 
-                            action_to_execute_robot[1],
-                            observation_robot,
-                            self.scene_graph_robot
-                        )
-                        self.last_robot_act = action_to_execute_robot[0]
-                        if self.last_robot_act == 'approach_grasp':
-                            self.last_grasp_target = action_to_execute_robot[1]
-                        if self.last_robot_act == 'release':
-                            self.last_grasp_target = None
+                    action_to_execute = action_plan[0]
+                    self.action_executor.set_action(
+                        action_to_execute[0], 
+                        action_to_execute[1],
+                        observation,
+                        self.scene_graph
+                    )
+                    self.last_act = action_to_execute[0]
+                    if self.last_act == 'approach_grasp':
+                        self.last_grasp_target = action_to_execute[1]
+                    if self.last_act == 'release':
+                        self.last_grasp_target = None
                         
                     action_executed = False
                     # action_executed_robot = False
                     for _ in range(self.env_timeout):
                         # print(self.action_executor.get_current_action(), self.action_executor_robot.get_current_action())
-                        if self.move_robot:
-                            current_action_present = self.action_executor.get_current_action() or self.action_executor_robot.get_current_action()
-                        else:
-                            current_action_present = self.action_executor.get_current_action()
+                        current_action_present = self.action_executor.get_current_action()
                         if current_action_present:
-                            if self.action_executor.get_current_action():
-                                action = self.action_executor.step(observation)
-                            else:
-                                action = self.default_environment_action
-                                action[6] = self.previous_gripper_action
-                            if self.action_executor_robot.get_current_action():
-                                action_robot = self.action_executor_robot.step(observation_robot)
-                                # print(action_robot)
-                                # exit()
-                            else:
-                                action_robot = self.default_environment_action
-                                action_robot[6] = self.previous_gripper_action_robot
+                            action = self.action_executor.step(observation)
                         else:
                             action_executed = True
                             break
                         # print(action, action_robot)
                         # print(action)
                         observation, _, _, _ = self.environment.step(action)
-                        if self.move_robot:
-                            self._send_robot_action(action_robot, observation_robot)
                         # input()
                         if not self.environment.blender_enabled:
                             if not self.disable_rendering:
                                 self.environment.render()
-                        if self.move_robot:
-                            observation_robot = self._get_observation_robot(observation)
                         self.previous_gripper_action = action[6]
-                        self.previous_gripper_action_robot = action_robot[6]
-                        # print(observation['gripper_action'])
-                        # print(observation['robot0_eef_quat'], observation_robot['robot0_eef_quat'])
                         
                     if action_executed:
                         if self.environment.blender_enabled:
                             image_path = self.environment.blender_render()
                             self.last_render_path = image_path
                             image = self._load_image(image_path)
-                        poses, bboxes = self.pose_model.get_pose(image, observation)
                         poses_gt, bboxes_gt = self.pose_model_gt.get_pose(image, observation)
-                        if self.move_robot:
-                            image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-                            poses_robot, bboxes_robot = self._align_robot_debug(
-                                scene_vis, labels_robot, poses_robot, bboxes_robot, observation_robot
-                            )
-                            image_robot.save(f'./output_shared/test_{counter}.png')
-                            counter += 1
+                        poses, bboxes = self.pose_model.get_pose(image, observation)
+
+                        labels_cosy, poses_cosy, bboxes_cosy = self._request_cosypose_detection()
+                        poses_cosy, bboxes_cosy = self._align_cosy_poses(
+                            scene_vis, labels_cosy, poses_cosy, bboxes_cosy, observation
+                        )
                         
                         self._update_scene_graph(poses, bboxes, observation)
-                        if self.move_robot:
-                            self._update_scene_graph(poses_robot, bboxes_robot, observation_robot, robot=True)
                         self._update_scene_graph(poses_gt, bboxes_gt, observation, gt=True)
                         if not self._check_gt_scene():
                             print("Broken scene error")
                             return InferenceCode.BROKEN_SCENE
-                        if self.move_robot:
-                            observation_robot['action'] = action_to_execute_robot
-                            observation_robot['action_list'] = action_plan_robot
-                            self.update_sequence_json(observation, action_to_execute, observation_robot)
-                        elif self.environment.blender_enabled:
+                        if self.environment.blender_enabled:
                             self.update_sequence_json(observation, action_to_execute)
                     else:
                         print('Action not executed correctly')
@@ -749,7 +665,7 @@ class InferenceToolBlender:
         }
         return task
 
-    def update_sequence_json(self, obs, last_action=None, obs_robot=None):
+    def update_sequence_json(self, obs, last_action=None):
         if not self.environment.blender_enabled and not self.move_robot:
             return
         if self.obs_num == 0:
@@ -794,30 +710,6 @@ class InferenceToolBlender:
             obs_set['objects'][-1]['ori'] = obs_set['objects'][-1]['ori'].tolist()
             if obs_set['objects'][-1]['weight'] is not None:
                 obs_set['objects'][-1]['weight'] = obs_set['objects'][-1]['weight'].tolist()
-
-        if obs_robot is not None:
-            obs_set_robot = {}
-            obs_set_robot['robot'] = {
-                'pos': obs_robot['robot0_eef_pos'].tolist(),
-                'ori': obs_robot['robot0_eef_quat'].tolist(),
-                'gripper_action': obs_robot['gripper_action'],
-                'gripper_closed': obs_robot['gripper_closed'],
-                'weight_measurement': obs_robot['weight_measurement']
-            }
-            if 'action' in obs_robot:
-                obs_set_robot['robot']['action'] = obs_robot['action']
-            if 'action_list' in obs_robot:
-                obs_set_robot['robot']['action_list'] = obs_robot['action_list']
-
-            obs_set_robot['objects'] = []
-            for obj in self.scene_graph_robot:
-                obs_set_robot['objects'].append(copy.deepcopy(obj))
-                obs_set_robot['objects'][-1]['bbox'] = obs_set_robot['objects'][-1]['bbox'].tolist()
-                obs_set_robot['objects'][-1]['pos'] = obs_set_robot['objects'][-1]['pos'].tolist()
-                obs_set_robot['objects'][-1]['ori'] = obs_set_robot['objects'][-1]['ori'].tolist()
-                if obs_set_robot['objects'][-1]['weight'] is not None:
-                    obs_set_robot['objects'][-1]['weight'] = obs_set_robot['objects'][-1]['weight']
-
 
         obs_set_gt = {}
         robot_body, gripper_body = self.environment.get_robot_configuration()
@@ -873,8 +765,7 @@ class InferenceToolBlender:
 
         info_struct['observations'].append(obs_set)
         info_struct['observations_gt'].append(obs_set_gt)
-        if self.move_robot:
-            info_struct['observations_robot'].append(obs_set_robot)
+
         with open(self.json_path, 'w') as f:
             json.dump(info_struct, f, indent=4)
         self.obs_num += 1
@@ -913,65 +804,6 @@ class InferenceToolBlender:
                 return False
         return True
 
-    def _get_observation_robot(self, observation):
-        observation_robot = observation.copy()
-        pos, ori, gripper_action, gripper_closed, weight = self._pool_gripper_data(observation)
-        observation_robot['robot0_eef_pos'] = pos
-        observation_robot['robot0_eef_quat'] = ori
-        observation_robot['gripper_action'] = gripper_action
-        observation_robot['gripper_closed'] = gripper_closed
-        observation_robot['weight_measurement'] = weight
-
-        return observation_robot
-
-    def _pool_gripper_data(self, obs):
-        msg = self._socket_state_msg.recv()
-        state = pickle.loads(msg)
-        pos = np.array(state['eef_trans'])
-        ori = np.array(state['eef_rot'])
-        joint_state = state['joint_states']
-        finger1_pos = joint_state['position'][-2]
-        finger2_pos = joint_state['position'][-1]
-        finger1_vel = joint_state['velocity'][-2]
-        finger2_vel = joint_state['velocity'][-1]
-        finger_reach = 0.03988
-        if finger1_pos < 0.039 and finger2_pos < 0.039 and np.abs(finger1_vel) < 0.001 and np.abs(finger2_vel) < 0.001:
-            gripper_closed = True
-        else:
-            gripper_closed = False
-        
-        finger1_perc_close = 1.0 - finger1_pos / finger_reach
-        finger2_perc_close = 1.0 - finger2_pos / finger_reach
-        gripper_close_perc = 0.5 * (finger1_perc_close + finger2_perc_close)
-        gripper_action = 2 * gripper_close_perc - 1.0
-        # print(f'gripper_action: {gripper_action}')
-        weight_msg = self._last_weight
-        # weight_msg = self._weight_client.wait_receive_param("F_ext", timeout=1000)
-        z_force = weight_msg['wrench']['force']['z']
-        weight = -z_force / 9.81
-
-
-        # if finger1_vel > 0.001 and finger2_vel > 0.001:
-        #     gripper_action = -1.0
-        # else:
-        #     gripper_action = 1.0
-
-        # joint_state = 
-        # print(state)
-        # print(pos)
-        # print(ori)
-
-        # pos = obs['robot0_eef_pos'] 
-        # ori = obs['robot0_eef_quat'] 
-        # print(pos)
-        # print(ori)
-        # print(gripper_action, gripper_closed)
-        # gripper_action = obs['gripper_action'] 
-        # gripper_closed = obs['gripper_closed'] 
-        # weight = obs['weight_measurement'] 
-
-        return pos, ori, gripper_action, gripper_closed, weight
-
     def _send_robot_action(self, action, obs):
         pos = obs['robot0_eef_pos']
         ori = obs['robot0_eef_quat']
@@ -1003,82 +835,17 @@ class InferenceToolBlender:
 
         # time.sleep(2.0)
 
-    def _request_img_pose(self):
-        self._socket_img_pose_msg.send_string("scene_camera")
-        # self._socket_img_pose_msg.send(b'0')
-        print('msg send')
-        msg = self._socket_img_pose_msg.recv()
-        print('msg received')
-        msg = pickle.loads(msg)
-        img = msg['image']
-        img = Image.fromarray(img)
-        objs = msg['objects']
-        names, poses, bboxes = [], [], []
-        for obj in objs:
-            name = COSYPOSE2NAME[obj['label']]
-            names.append(name)
-            print(name)
-            pose_cosypose = obj['pose']
-            pos_cosy, ori_cosy = pose_cosypose
-            pos_correction = np.matmul(
-                T.quat2mat(ori_cosy), COSYPOSE_TRANSFORM[obj['label']][0]
-            )
-            pos = pos_cosy + pos_correction
-            ori = T.quat_multiply(ori_cosy, COSYPOSE_TRANSFORM[obj['label']][1])
-            print(pos_cosy, pos)
-            print(ori_cosy, ori)
-
-            bbox_xyz = COSYPOSE_BBOX[obj['label']]
-            bbox_local = self._get_local_bounding_box(bbox_xyz)
-            bbox_local = np.concatenate(
-                (
-                    bbox_local.T,
-                    np.ones((bbox_local.shape[0], 1)).T
-                )
-            )
-            pose_mat = T.pose2mat((pos, ori))
-            # print(pose_mat)
-            bbox_world = np.matmul(pose_mat, bbox_local)
-            poses.append((pos, ori))
-            bboxes.append(bbox_world[:-1, :].T)
-        # exit()
-        
-        return img, names, poses, bboxes
-
     def _setup_communication(self):
         context = zmq.Context()
-        self._socket_state_msg = context.socket(zmq.SUB)
-        self._socket_state_msg.setsockopt(zmq.SUBSCRIBE, b'')
-        self._socket_state_msg.setsockopt(zmq.CONFLATE, True)
-        self._socket_state_msg.connect("tcp://127.0.0.1:5555")
-        self._socket_gripper_control = context.socket(zmq.REQ)
-        self._socket_gripper_control.connect("tcp://127.0.0.1:5556")
-        self._socket_pose_control = context.socket(zmq.PUB)
-        self._socket_pose_control.bind("tcp://127.0.0.1:5557")
-        self._socket_img_pose_msg = context.socket(zmq.REQ)
-        self._socket_img_pose_msg.connect("tcp://127.0.0.1:5559")
-        
-        def update_params(parameter, data):
-            if parameter != "F_ext":
-                return
-            if data is None:
-                return
-            self._last_weight = data
-
-        self._weight_client = ParamSubscriber(
-            addr='127.0.0.1',
-            start_port=5560
-        )
-        self._weight_client.declare('F_ext')
-        self._weight_client.subscribe('F_ext')
-        self._weight_client.set_callback(update_params)
-
-        self.gripper_msg_prev = None
-
-        # self._socket_gripper_control.send(b'close')
-        # self._socket_gripper_control.recv()
-        # self._socket_gripper_control.send(b'open')
-        # exit()
+        self._socket_cosypose = context.socket(zmq.REQ)
+        self._socket_cosypose.connect("tcp://127.0.0.1:5554")
+        cam_pos = CAMERA_DATA['extrinsic']['pos']
+        cam_ori = CAMERA_DATA['extrinsic']['ori']
+        # Rot around x 180d (robosuite is xyzw)
+        blender_to_cosy = np.array([1.0, 0, 0, 0])
+        cam_ori = T.quat2mat(T.quat_multiply(T.convert_quat(cam_ori, to='xyzw'), blender_to_cosy))
+        self.camera_pose = T.make_pose(cam_pos, cam_ori)
+        # print(self.camera_pose)
 
     def _get_local_bounding_box(self, bbox):
         bbox_wh = bbox['x'] / 2
@@ -1099,7 +866,7 @@ class InferenceToolBlender:
             ]
         )
 
-    def _align_robot_debug(self, scene, labels, poses, bboxes, obs=None):
+    def _align_cosy_poses(self, scene, labels, poses, bboxes, obs=None):
         obj_list = [o['name'] for o in scene]
         if obs is None:
             p_aligned, bb_aligned = [], []
@@ -1198,3 +965,55 @@ class InferenceToolBlender:
         print(p_aligned)
         print(bb_aligned)
         return p_aligned, bb_aligned
+
+    def _request_cosypose_detection(self, img_path):
+        request = {
+            'img_path': img_path,
+            'camera_k': CAMERA_DATA['intrinsic']
+        }
+        request_msg = pickle.dumps(request)
+        self._socket_cosypose.send(request_msg)
+        print(f"Cosypose detection requested for {img_path}")
+        msg = self._socket_cosypose.recv()
+        msg = pickle.loads(msg)
+        print("Cosypose detection received")
+        # print(msg)
+        # exit()
+        names, poses, bboxes = [], [], []
+        for (label, pose) in msg:
+            # print(label)
+            # print(pose)
+            # continue
+            name = COSYPOSE2NAME[label]
+            names.append(name)
+            pose_in_base = np.matmul(self.camera_pose, pose)
+            # print(name)
+            # print(pose_in_base)
+            # print(T.make_pose(COSYPOSE_TRANSFORM[label][0],
+            #         T.quat2mat(COSYPOSE_TRANSFORM[label][1])
+            #     ))
+            pose_in_base = np.matmul(
+                pose_in_base,
+                T.make_pose(COSYPOSE_TRANSFORM_DEFAULT[label][0],
+                    T.quat2mat(COSYPOSE_TRANSFORM_DEFAULT[label][1])
+                )
+            )
+            pose_in_base[2, 3] = max(pose_in_base[2, 3], 0.0)
+
+
+            bbox_xyz = COSYPOSE_BBOX[label]
+            bbox_local = self._get_local_bounding_box(bbox_xyz)
+            bbox_local = np.concatenate(
+                (
+                    bbox_local.T,
+                    np.ones((bbox_local.shape[0], 1)).T
+                )
+            )
+            # print(pose_mat)
+            bbox_world = np.matmul(pose_in_base, bbox_local)
+            poses.append(T.mat2pose(pose_in_base))
+            bboxes.append(bbox_world[:-1, :].T)
+            print(name)
+            print(poses[-1])
+
+        return names, poses, bboxes

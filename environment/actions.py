@@ -15,8 +15,19 @@ YCBObjectList = [
     'mug'
 ]
 
-
 YCB_OFFSETS = {
+    'bleach cleanser': np.array([0.009209, 0.0, 0.0]),
+    'cracker box': np.array([0.0, 0.0, 0.0]),
+    'foam brick': np.array([0.0, 0.0, 0.0]),
+    'mustard bottle': np.array([0.0, 0.0, 0.0]),
+    'potted meat can': np.array([0.0, 0.0, 0.0]),
+    'sugar box': np.array([0.0, 0.0, 0.0]),
+    'tomato soup can': np.array([0.0, 0.0, 0.0]),
+    'bowl': np.array([0.078698, 0.0, 0.0]),
+    'mug': np.array([-0.012, 0.044335, 0.0]),
+}
+
+YCB_OFFSETS_DEFAULT = {
     'bleach cleanser': np.array([0.009209, 0.0, 0.0]),
     'cracker box': np.array([0.0, 0.0, 0.0]),
     'foam brick': np.array([0.0, 0.0, 0.0]),
@@ -67,6 +78,7 @@ class ActionExecutor:
         self.interpolate_free_movement = False
         self.decouple = True
         self.use_ycb_grasps = False
+        self.use_ycb_default_offsets = False
 
     def set_action(self, action, target, obs, scene):
         self.action = action
@@ -906,7 +918,10 @@ class ActionExecutor:
             z_coord = bbox[:, 2]
             z_coord = np.max(z_coord) + self.move_clearance
             target_pos[2] = z_coord
-            target_pos += np.matmul(obj_mat, YCB_OFFSETS[target_name])
+            if self.use_ycb_default_offsets:
+                target_pos += np.matmul(obj_mat, YCB_OFFSETS_DEFAULT[target_name])
+            else:
+                target_pos += np.matmul(obj_mat, YCB_OFFSETS[target_name])
 
             interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
             for p in interp_pos:
@@ -970,7 +985,10 @@ class ActionExecutor:
             z_coord = np.max(z_coord) + self.move_clearance
             target_pos[2] = z_coord
 
-            target_pos += gripper_y_dir * YCB_OFFSETS[target_name][0]
+            if self.use_ycb_default_offsets:
+                target_pos += gripper_y_dir * YCB_OFFSETS_DEFAULT[target_name][0]
+            else:
+                target_pos += gripper_y_dir * YCB_OFFSETS[target_name][0]
 
             interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
             for p in interp_pos:
@@ -1296,10 +1314,12 @@ class ActionExecutor:
             z_coord = np.max(z_coord) + self.move_clearance
             target_pos[2] = z_coord
             # print(target_pos)
-            target_pos += np.matmul(obj_mat, YCB_OFFSETS[target_name])
+            if self.use_ycb_default_offsets:
+                target_pos += np.matmul(obj_mat, YCB_OFFSETS_DEFAULT[target_name])
+            else:
+                target_pos += np.matmul(obj_mat, YCB_OFFSETS[target_name])
             # print(target_pos)
 
-            # print(target_pos, obj_mat, YCB_OFFSETS[target_name])
             # exit()
 
             interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
