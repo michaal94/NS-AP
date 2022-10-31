@@ -136,5 +136,5 @@ output/
 output_shared/
 test/
 output_ycb/NS_AP_demo*
-assets/ycb/temp_obj.xml
+temp_obj.xml
 output_ycb_blender/
