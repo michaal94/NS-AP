@@ -134,6 +134,7 @@ dmypy.json
 # Custom
 output/
 output_shared/
+output_ycb_images/
 test/
 output_ycb/NS_AP_demo*
 temp_obj.xml

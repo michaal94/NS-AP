@@ -167,6 +167,8 @@ class InferenceToolDebug:
         self.previous_gripper_action = -1.0
         self.previous_gripper_action_robot = -1.0
 
+        self.prog_out = None
+
         # Get first image
         if self.environment.blender_enabled:
             image_path = self.environment.blender_render()
@@ -233,6 +235,7 @@ class InferenceToolDebug:
             self.loop_detector.flush()
             # input()
             print(program_output)
+            self.prog_out = program_output
             # print(sce)
             # exit()
             program_status = program_output['STATUS']
@@ -785,7 +788,8 @@ class InferenceToolDebug:
             'gripper_action': obs['gripper_action'].tolist(),
             'gripper_closed': obs['gripper_closed'].tolist(),
             'weight_measurement': obs['weight_measurement'].tolist(),
-            'action': last_action
+            'action': last_action,
+            'program_out': self.prog_out
         }
 
         obs_set['objects'] = []
@@ -804,7 +808,8 @@ class InferenceToolDebug:
                 'ori': obs_robot['robot0_eef_quat'].tolist(),
                 'gripper_action': obs_robot['gripper_action'],
                 'gripper_closed': obs_robot['gripper_closed'],
-                'weight_measurement': obs_robot['weight_measurement']
+                'weight_measurement': obs_robot['weight_measurement'],
+                'program_out': self.prog_out
             }
             if 'action' in obs_robot:
                 obs_set_robot['robot']['action'] = obs_robot['action']
@@ -838,7 +843,8 @@ class InferenceToolDebug:
                 'weight_measurement': obs['weight_measurement'].tolist(),
                 'grasped_obj_idx': obs['grasped_obj_idx'].tolist(),
                 'robot_body': robot_body,
-                'gripper_body': gripper_body
+                'gripper_body': gripper_body,
+                'program_out': self.prog_out
             }
         else:
             obs_set_gt['robot'] = {
@@ -851,7 +857,8 @@ class InferenceToolDebug:
                 'robot_body': robot_body,
                 'gripper_body': gripper_body,
                 'robot_mask': masks['robot'],
-                'table_mask': masks['table']
+                'table_mask': masks['table'],
+                'program_out': self.prog_out
             }
 
         obs_set_gt['objects'] = []
