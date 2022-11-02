@@ -44,14 +44,19 @@ for f_bname in tqdm(bname_list):
     with open(os.path.join(in_dir, f_bname + '.json'), 'r') as f:
         attr = json.load(f)
     img = Image.open(os.path.join(in_dir, f_bname + '.png'))
+    out_path = os.path.join(in_dir, f_bname + '_crop.png')
     d = ImageDraw.Draw(img)
     min_x = 2000
     min_y = 2000
     max_x = 0
     max_y = 0
     bbox = get_local_bounding_box(attr['bbox'])
+    # print(bbox)
+    bbox = np.matmul(T.quat2mat(T.convert_quat(np.array(attr['ori']), to='xyzw')), bbox.T).T
+    # print(bbox)
+    bbox += np.array(attr['pos'])
     for p in bbox:
-        print(p)
+        # print(p)
         bbox_corner = np.ones(4)
         bbox_corner[0:3] = p
         # print(bbox_corner)
@@ -64,5 +69,8 @@ for f_bname in tqdm(bname_list):
         min_y = min(min_y, img_point[1])
         max_x = max(max_x, img_point[0])
         max_y = max(max_y, img_point[1])
-    d.rectangle([min_x, min_y, max_x, max_y], outline ='blue')
-    input()
+    img = img.crop((min_x, min_y, max_x, max_y))
+    # d.rectangle([min_x, min_y, max_x, max_y], outline ='blue')
+    img.save(out_path)
+    # input()
+    # img.close()

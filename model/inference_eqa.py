@@ -117,6 +117,8 @@ class InferenceToolDebug:
         self.prev_relative_pose = None
         self.last_grasp_target = None
         self.last_robot_act = None
+        json_name = "sequence.json"
+        self.json_path = os.path.join(self.save_dir, json_name)
 
     def run(self):
         assert self.instruction_model is not None, "Load instruction to program model (or set GT instruction mode) before running inference"
@@ -137,7 +139,7 @@ class InferenceToolDebug:
         # First from robot
         if self.move_robot:   
             image_robot, labels_robot, poses_robot, bboxes_robot = self._request_img_pose()
-            image_robot.save(self.json_path.replace('.json', f'_img_{0:04d}.png'))
+            image_robot.save(self.json_path.replace('sequence.json', f'img_{0:04d}.png'))
             # image_robot.save('./output_shared/test_0.png')
             counter = 1
             assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
@@ -372,7 +374,7 @@ class InferenceToolDebug:
                                 scene_vis, labels_robot, poses_robot, bboxes_robot, observation_robot
                             )
                             # image_robot.save(f'./output_shared/test_{counter}.png')
-                            image_robot.save(self.json_path.replace('.json', f'_img_{counter:04d}.png'))
+                            image_robot.save(self.json_path.replace('sequence.json', f'img_{counter:04d}.png'))
                             counter += 1
                         
                         self._update_scene_graph(poses, bboxes, observation)
@@ -760,8 +762,6 @@ class InferenceToolDebug:
         if not self.environment.blender_enabled and not self.move_robot:
             return
         if self.obs_num == 0:
-            json_name = "sequence.json"
-            self.json_path = os.path.join(self.save_dir, json_name)
             info_struct = {
                 "info": {
                     "image_filename": self.instruction["image_filename"],
