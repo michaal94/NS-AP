@@ -148,11 +148,11 @@ def main():
                 obj.rotation_quaternion = quat
 
     x_min = 0.17
-    x_mid = 0.44
+    x_mid = 0.47
     x_max = 0.67
-    y_min = -0.24
+    y_min = -0.26
     y_mid = 0.0
-    y_max = 0.24
+    y_max = 0.26
 
     positions = {
         'tl': [x_min, y_min],
@@ -166,8 +166,21 @@ def main():
         'br': [x_max, y_max]
     }
 
+
+    x_min = 0.23
+    x_max = 0.60
+    y_min = -0.2
+    y_max = 0.2
+
+    positions = {
+        'tl': [x_min, y_min],
+        'tr': [x_min, y_max],
+        'bl': [x_max, y_min],
+        'br': [x_max, y_max]
+    }
+
     for fname in [
-        'bleach_cleanser',
+        # 'bleach_cleanser',
         # 'bowl',
         # 'cracker_box',
         # 'foam_brick',
@@ -176,8 +189,12 @@ def main():
         # 'potted_meat_can',
         # 'sugar_box',
         # 'tomato_soup_can',
+        # 'cracker_box_sideA',
+        # 'cracker_box_sideB',
+        # 'sugar_box_sideA',
+        'sugar_box_sideB',
     ]:
-        for pos in ['tl', 'tm', 'tr', 'ml', 'mm', 'mr', 'bl', 'bm', 'br']:
+        for pos in positions.keys():
             for rot in range(0, 360, 15):
                 output_image = os.path.join(
                     output_dir, f'{fname}_{pos}_{rot:03d}.png'
