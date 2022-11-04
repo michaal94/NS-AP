@@ -396,6 +396,8 @@ class AttributesYCBModel(nn.Module):
     def __init__(self, params={}) -> None:
         super().__init__()
         self.model = torchvision.models.resnet50(pretrained=True)
+        for param in self.model.parameters():
+            param.requires_grad = False
         self.linear_head = nn.Sequential(
             nn.PReLU(),
             nn.Linear(1000, 250),
@@ -416,6 +418,239 @@ class AttributesYCBModel(nn.Module):
         lin_head = self.linear_head(body)
         preds = [
             head(lin_head) for head in self.heads
+        ]
+        return preds
+
+
+class YCBAttributesTrainer2(VisualRecognitionLoader):
+    def __init__(self, model_params, loss_params, optimiser_params, scheduler_params) -> None:
+        self.model = AttributesYCBModel2(model_params)
+        self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.model.to(self.device)
+
+        params = [p for p in self.model.parameters() if p.requires_grad]
+        lr = 0.001
+        weight_decay = 0
+        if 'lr' in optimiser_params:
+            lr = scheduler_params['lr']
+        if 'weight_decay' in optimiser_params:
+            weight_decay = scheduler_params['weight_decay']
+        self.optimiser = torch.optim.Adam(
+            params,
+            lr=lr,
+            weight_decay=weight_decay
+        )
+
+        self.epoch = 0
+        self.new_epoch_trigger = False
+        if 'starting_epoch' in scheduler_params:
+            self.epoch = scheduler_params['starting_epoch']
+        scheduler_step = 1
+        if 'scheduler_step' in scheduler_params:
+            scheduler_step = scheduler_params['scheduler_step']
+        gamma = 0.7
+        if 'gamma' in scheduler_params:
+            gamma = scheduler_params['gamma']
+
+        self.lr_scheduler = torch.optim.lr_scheduler.StepLR(
+            self.optimiser,
+            step_size=scheduler_step,
+            gamma=gamma
+        )
+        
+        self.ce_loss = nn.CrossEntropyLoss()
+        self.loss_function = self.loss_fn
+
+        self.program_idx_to_token = None
+        self.ce_num = 5
+        if 'ce_num' in model_params:
+            self.ce_num = model_params['ce_num']
+
+        self.transforms = None
+
+
+    def loss_fn(self, pred, target):
+        # print()
+        # print(pred, target)
+
+        name_loss = self.ce_loss(pred[0], target[0])
+        shape_loss = self.ce_loss(pred[1], target[1])
+        material_loss = self.ce_loss(pred[2], target[2])
+        colour_loss = self.ce_loss(pred[3], target[3])
+
+        loss = (name_loss + shape_loss + material_loss + colour_loss) / 4
+
+        return loss, {
+                'name': name_loss.item(),
+                'shape': shape_loss.item(),
+                'material': material_loss.item(),
+                'colour': colour_loss.item()
+            }
+
+    def train_step(self, print_debug=None):
+        assert self.data is not None, "Set input first"
+        self.set_train()
+
+        if self.new_epoch_trigger:
+            self.lr_scheduler.step()
+            self.new_epoch_trigger = False
+
+        img, cosyname, target = self.data
+        img = img.to(self.device)
+        cosyname = cosyname.to(self.device)
+        target = [t.to(self.device) for t in target]
+
+        preds = self.model(img, cosyname)
+
+        loss, stats = self.loss_function(preds, target)
+
+        self.optimiser.zero_grad()
+        loss.backward()
+        self.optimiser.step()
+
+        return loss.item(), stats
+
+    def validate(self, loader):
+        self.set_test()
+        stats = {
+            'acc': 0,
+            'acc_name': 0,
+            'acc_shape': 0,
+            'acc_material': 0,
+            'acc_colour': 0
+        }
+        with torch.no_grad():
+            for img, cosyname, target in tqdm(loader):
+                img = img.to(self.device)
+                cosyname = cosyname.to(self.device)
+                target = [t.to(self.device) for t in target]
+                preds = self.model(img, cosyname)
+                # print(preds, target)
+
+                for i, p in enumerate(preds):
+                    _, pred_token = torch.max(p, 1)
+                    # print(pred_token)
+                    correct = (pred_token == target[i]).sum()
+                    stats[list(stats.keys())[i + 1]] += correct.item()
+
+        acc_avg = 0
+        for k in stats.keys():
+            if 'acc' in k:
+                stats[k] = stats[k] / len(loader.dataset)
+                acc_avg += stats[k]
+        acc_avg = acc_avg / 4        
+        stats['acc'] = acc_avg
+
+        return stats
+
+    def get_single_pred(self, img_crop, name):
+        self.set_test()
+        transforms = []
+        transforms.append(T.Resize((224, 224)))
+        transforms.append(T.ToTensor())
+        transforms.append(
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        )
+        transforms = T.Compose(transforms)
+        with torch.no_grad():
+            img = transforms(img_crop).unsqueeze(0)
+            img = img.to(self.device)
+            name = name.to(self.device).unsqueeze(0)
+            preds = self.model(img, name)
+            pred_tokens = []
+            for i, p in enumerate(preds):
+                _, pred_token = torch.max(p, 1)
+                pred_tokens.append(pred_token.item())
+
+        return pred_tokens
+
+    def get_scene(self, image, segmentation, scene_gt):
+        return None
+
+    def get_scene_pose(self, image, segmentation, scene_gt, return_bboxes=False):
+        return None
+
+    def save_checkpoint(self, path, epoch=None, num_iter=None):
+        checkpoint = {
+            'state_dict': self.model.cpu().state_dict(),
+            'epoch': epoch,
+            'num_iter': num_iter
+        }
+        #TODO it saves in validation
+        if self.optimiser is not None:
+            checkpoint['optim_state_dict'] = self.optimiser.state_dict()
+        if self.lr_scheduler is not None:
+            checkpoint['scheduler_state_dict'] = self.lr_scheduler.state_dict()
+        torch.save(checkpoint, path)
+        self.model = self.model.to(self.device)
+
+    def load_checkpoint(self, path, zero_train=False):
+        checkpoint = torch.load(path)
+        self.model.load_state_dict(checkpoint['state_dict'])
+        if self.optimiser is not None:
+            if self.model.training and not zero_train:
+                self.optimiser.load_state_dict(checkpoint['optim_state_dict'])
+        if self.lr_scheduler is not None:
+            if self.model.training and not zero_train:
+                self.lr_scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
+        epoch = checkpoint['epoch'] if not zero_train else None
+        if epoch is not None:
+            self.epoch = epoch
+        num_iter = checkpoint['num_iter'] if not zero_train else None
+        return epoch, num_iter
+
+    def set_train(self):
+        if not self.model.training:
+            self.model.train()
+
+    def set_test(self):
+        if self.model.training:
+            self.model.eval()
+
+    def set_input(self, data):
+        self.data = data
+
+    def unset_input(self):
+        self.data = None
+
+    def set_epoch_number(self, epoch):
+        if self.epoch != epoch:
+            self.new_epoch_trigger = True
+            self.epoch = epoch
+
+    def __str__(self):
+        return "YCB Attributes ResNet"
+
+
+class AttributesYCBModel2(nn.Module):
+    def __init__(self, params={}) -> None:
+        super().__init__()
+        self.model = torchvision.models.resnet50(pretrained=True)
+        for param in self.model.parameters():
+            param.requires_grad = False
+        self.linear_head = nn.Sequential(
+            nn.PReLU(),
+            nn.Linear(1000, 200),
+            nn.PReLU()
+        )
+        self.embedding = nn.Embedding(10, 50)
+        self.heads = nn.ModuleList(
+            [
+                nn.Linear(250, 10),
+                nn.Linear(250, 4),
+                nn.Linear(250, 4),
+                nn.Linear(250, 5)
+            ]
+        )
+
+
+    def forward(self, inp_img, inp_name):
+        body = self.model(inp_img)
+        lin_head = self.linear_head(body)
+        emb = self.embedding(inp_name)
+        combined = torch.cat((lin_head, emb), dim=1)
+        preds = [
+            head(combined) for head in self.heads
         ]
         return preds
 
@@ -538,6 +773,26 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
         stats['acc'] = acc_avg
 
         return stats
+
+    def get_single_pred(self, img_crop):
+        self.set_test()
+        transforms = []
+        transforms.append(T.Resize((224, 224)))
+        transforms.append(T.ToTensor())
+        transforms.append(
+            T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
+        )
+        transforms = T.Compose(transforms)
+        with torch.no_grad():
+            img = transforms(img_crop).unsqueeze(0)
+            img = img.to(self.device)
+            preds = self.model(img)
+            pred_tokens = []
+            for i, p in enumerate(preds):
+                _, pred_token = torch.max(p, 1)
+                pred_tokens.append(pred_token.item())
+
+        return pred_tokens
 
     def get_scene(self, image, segmentation, scene_gt):
         return None

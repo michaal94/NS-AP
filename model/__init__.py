@@ -1,5 +1,5 @@
 from .instruction_inference import InstructionGTLoader, BaselineSeq2SeqTrainer
-from .visual_recognition import VisualGTLoader, AttributesBaselineTrainer, YCBAttributesTrainer
+from .visual_recognition import VisualGTLoader, AttributesBaselineTrainer, YCBAttributesTrainer, YCBAttributesTrainer2
 from .action_planner import ActionGTPlanner
 from .pose_estimation import PoseGTLoader
 from .segmentation import BaselineSegmentationTrainer
@@ -31,7 +31,8 @@ TRAINERS = {
     "BaselineSeq2SeqTrainer": BaselineSeq2SeqTrainer,
     "AttributesBaselineTrainer": AttributesBaselineTrainer,
     "BaselineActionTrainer": BaselineActionTrainer,
-    "YCBAttributesTrainer": YCBAttributesTrainer
+    "YCBAttributesTrainer": YCBAttributesTrainer,
+    "YCBAttributesTrainer2": YCBAttributesTrainer2
 }
 
 def get_trainer(params_model, params_loss, params_optimiser, params_scheduler):

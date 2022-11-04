@@ -81,6 +81,11 @@ class AttributesYCB(Dataset):
             json_files_filtered = list(set(json_files) - set(json_files_filtered))
         json_files_filtered = sorted(json_files_filtered)
 
+        if 'name_from_cosy' in params:
+            self.include_name = params['name_from_cosy']
+        else:
+            self.include_name = False
+
         self.items = []
         for json_path in json_files_filtered:
             with open(os.path.join(params['path'], json_path), 'r') as f:
@@ -116,7 +121,10 @@ class AttributesYCB(Dataset):
 
         img = self.transforms(img)
 
-        return img, target
+        if self.include_name:
+            return img, torch.tensor(name), target
+        else:
+            return img, target
 
     def __len__(self):
         return len(self.items)

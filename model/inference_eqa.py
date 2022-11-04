@@ -6,6 +6,7 @@ import time
 import numpy as np
 
 import zmq
+import signal
 from PIL import Image
 
 from robosuite import load_controller_config
@@ -1068,6 +1069,8 @@ class InferenceToolDebug:
         return img, names, poses, bboxes
 
     def _setup_communication(self):
+        signal.signal(signal.SIGINT, self._shutdown_communication())
+        signal.signal(signal.SIGTERM, self._shutdown_communication())
         context = zmq.Context()
         self._socket_state_msg = context.socket(zmq.SUB)
         self._socket_state_msg.setsockopt(zmq.SUBSCRIBE, b'')
@@ -1079,6 +1082,37 @@ class InferenceToolDebug:
         self._socket_pose_control.bind("tcp://127.0.0.1:5557")
         self._socket_img_pose_msg = context.socket(zmq.REQ)
         self._socket_img_pose_msg.connect("tcp://127.0.0.1:5559")
+        
+        def update_params(parameter, data):
+            if parameter != "F_ext":
+                return
+            if data is None:
+                return
+            self._last_weight = data
+
+        self._weight_client = ParamSubscriber(
+            addr='127.0.0.1',
+            start_port=5560
+        )
+        self._weight_client.declare('F_ext')
+        self._weight_client.subscribe('F_ext')
+        self._weight_client.set_callback(update_params)
+
+        self.gripper_msg_prev = None
+
+        # self._socket_gripper_control.send(b'close')
+        # self._socket_gripper_control.recv()
+        # self._socket_gripper_control.send(b'open')
+        # exit()
+
+    def _shutdown_communication(self):
+
+        self._socket_state_msg.close()
+        self._socket_gripper_control.close()
+        self._socket_pose_control.close()
+        self._socket_img_pose_msg.close()
+
+        self._context.term()
         
         def update_params(parameter, data):
             if parameter != "F_ext":
