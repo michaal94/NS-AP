@@ -160,6 +160,7 @@ class InferenceToolDebug:
         #DEBUG
         self.action_executor.env = self.environment
         self.action_executor.use_ycb_grasps = True
+        self.action_executor.use_ycb_default_offsets = True
         # self.action_executor.interpolate_free_movement = True
         self.action_executor_robot.env = self.environment
         self.action_executor_robot.interpolate_free_movement = True
@@ -336,6 +337,7 @@ class InferenceToolDebug:
                                 action = self.default_environment_action
                                 action[6] = self.previous_gripper_action
                             if self.action_executor_robot.get_current_action():
+                                # print(self.action_executor_robot.get_current_action())
                                 action_robot = self.action_executor_robot.step(observation_robot)
                                 # print(action_robot)
                                 # exit()
@@ -349,6 +351,7 @@ class InferenceToolDebug:
                         # print(action)
                         observation, _, _, _ = self.environment.step(action)
                         if self.move_robot:
+                            print(action_to_execute_robot)
                             self._send_robot_action(action_robot, observation_robot)
                         # input()
                         if not self.environment.blender_enabled:
@@ -1136,6 +1139,13 @@ class InferenceToolDebug:
             # Fill correct
             for i, name in enumerate(labels):
                 if name in obj_list:
+                    skip = False
+                    if self.last_grasp_target is not None:
+                            if obj_list[self.last_grasp_target] == name:
+                                if obs['gripper_action'] > -0.99 and obs['gripper_action'] < 0.95:
+                                    skip = True
+                    if skip:
+                        continue
                     missing.remove(name)
                     idx = obj_list.index(name)
                     p_aligned[idx] = poses[i]

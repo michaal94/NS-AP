@@ -345,7 +345,6 @@ class AttributesBaselineTrainer(VisualRecognitionLoader):
     def __str__(self):
         return "Baseline Attributes ResNet"
 
-
 class AttributesBaselineModel(nn.Module):
     def __init__(self, params={}) -> None:
         super().__init__()
@@ -393,14 +392,42 @@ class AttributesBaselineModel(nn.Module):
         return preds
 
 
+class AttributesYCBModel(nn.Module):
+    def __init__(self, params={}) -> None:
+        super().__init__()
+        self.model = torchvision.models.resnet50(pretrained=True)
+        self.linear_head = nn.Sequential(
+            nn.PReLU(),
+            nn.Linear(1000, 250),
+            nn.PReLU()
+        )
+        self.heads = nn.ModuleList(
+            [
+                nn.Linear(250, 10),
+                nn.Linear(250, 4),
+                nn.Linear(250, 4),
+                nn.Linear(250, 5)
+            ]
+        )
+
+
+    def forward(self, inp):
+        body = self.model(inp)
+        lin_head = self.linear_head(body)
+        preds = [
+            head(lin_head) for head in self.heads
+        ]
+        return preds
+
+
 class YCBAttributesTrainer(VisualRecognitionLoader):
     def __init__(self, model_params, loss_params, optimiser_params, scheduler_params) -> None:
-        self.model = AttributesBaselineModel(model_params)
+        self.model = AttributesYCBModel(model_params)
         self.device = "cuda:0" if torch.cuda.is_available() else "cpu"
         self.model.to(self.device)
 
         params = [p for p in self.model.parameters() if p.requires_grad]
-        lr = 0.005
+        lr = 0.001
         weight_decay = 0
         if 'lr' in optimiser_params:
             lr = scheduler_params['lr']
@@ -428,13 +455,8 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
             step_size=scheduler_step,
             gamma=gamma
         )
-
-        self.loss_weight = 1.0
-        if 'loss_weight' is loss_params:
-            self.loss_weight = loss_params['loss_weight']
         
         self.ce_loss = nn.CrossEntropyLoss()
-        self.l1_loss = nn.L1Loss()
         self.loss_function = self.loss_fn
 
         self.program_idx_to_token = None
@@ -448,25 +470,20 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
     def loss_fn(self, pred, target):
         # print()
         # print(pred, target)
-        loss = self.ce_loss(pred[0], target[0])
-        loss +=  self.ce_loss(pred[1], target[1])
-        loss +=  self.ce_loss(pred[2], target[2])
-        loss +=  self.ce_loss(pred[3], target[3])
-        loss +=  self.ce_loss(pred[4], target[4])
-        loss /= self.ce_num
-        # loss +=  self.ce_loss(pred[5], target[5])
-        # loss +=  self.ce_loss(pred[6], target[6])
-        # loss +=  self.ce_loss(pred[7], target[7])
-        # loss +=  self.ce_loss(pred[8], target[8])
-        loss_ce = loss.item()
-        loss_l1 =  self.loss_weight * self.l1_loss(pred[self.ce_num], target[self.ce_num])
-        ori_err1 = torch.abs(pred[self.ce_num + 1] - target[self.ce_num + 1]).mean(dim=1)
-        ori_err2 = torch.abs(pred[self.ce_num + 1] + target[self.ce_num + 1]).mean(dim=1)
-        ori_loss = torch.where(ori_err1 < ori_err2, ori_err1, ori_err2)
-        loss_l1 +=  self.loss_weight * ori_loss.mean()
-        loss += loss_l1
-        loss_l1_val = loss_l1.item()
-        return loss, {'CE': loss_ce, 'L1': loss_l1_val}
+
+        name_loss = self.ce_loss(pred[0], target[0])
+        shape_loss = self.ce_loss(pred[1], target[1])
+        material_loss = self.ce_loss(pred[2], target[2])
+        colour_loss = self.ce_loss(pred[3], target[3])
+
+        loss = (name_loss + shape_loss + material_loss + colour_loss) / 4
+
+        return loss, {
+                'name': name_loss.item(),
+                'shape': shape_loss.item(),
+                'material': material_loss.item(),
+                'colour': colour_loss.item()
+            }
 
     def train_step(self, print_debug=None):
         assert self.data is not None, "Set input first"
@@ -493,18 +510,11 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
     def validate(self, loader):
         self.set_test()
         stats = {
-            'err_plus_pose_err': 0,
+            'acc': 0,
             'acc_name': 0,
             'acc_shape': 0,
             'acc_material': 0,
-            'acc_colour': 0,
-            'acc_size': 0,
-            # 'acc_in_hand': 0,
-            # 'acc_raised': 0,
-            # 'acc_approached': 0,
-            # 'acc_gripper_over': 0,
-            'pos_err': 0,
-            'ori_err': 0
+            'acc_colour': 0
         }
         with torch.no_grad():
             for img, target in tqdm(loader):
@@ -513,32 +523,19 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
                 preds = self.model(img)
                 # print(preds, target)
 
-                for i, p in enumerate(preds[0:self.ce_num]):
+                for i, p in enumerate(preds):
                     _, pred_token = torch.max(p, 1)
                     # print(pred_token)
                     correct = (pred_token == target[i]).sum()
                     stats[list(stats.keys())[i + 1]] += correct.item()
-
-                pos_pred = preds[self.ce_num]
-                pos_err = torch.abs(pos_pred - target[self.ce_num]).mean(dim=1)
-                stats['pos_err'] += pos_err.sum().item()
-                ori_pred = preds[self.ce_num + 1]
-                ori_err1 = torch.abs(ori_pred - target[self.ce_num + 1]).mean(dim=1)
-                ori_err2 = torch.abs(ori_pred + target[self.ce_num + 1]).mean(dim=1)
-                ori_err = torch.where(ori_err1 < ori_err2, ori_err1, ori_err2)
-                stats['ori_err'] += ori_err.sum().item()
 
         acc_avg = 0
         for k in stats.keys():
             if 'acc' in k:
                 stats[k] = stats[k] / len(loader.dataset)
                 acc_avg += stats[k]
-        acc_avg = acc_avg / self.ce_num
-
-        stats['pos_err'] = stats['pos_err'] / len(loader.dataset)
-        stats['ori_err'] = stats['ori_err'] / len(loader.dataset)
-        
-        stats['err_plus_pose_err'] = 0.5 - 0.5 * acc_avg + 0.25 * stats['pos_err'] + 0.25 * stats['ori_err']
+        acc_avg = acc_avg / 4        
+        stats['acc'] = acc_avg
 
         return stats
 
@@ -546,122 +543,7 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
         return None
 
     def get_scene_pose(self, image, segmentation, scene_gt, return_bboxes=False):
-        self.set_test()
-        if self.transforms is None:
-            import robosuite.utils.transform_utils as transf
-            from dataset.ns_ap import CLASS_TO_ID, SHAPE_TO_ID, MATERIAL_TO_ID, COLOUR_TO_ID
-            self.transforms = []
-            self.id_to_class = {v: k for k, v in CLASS_TO_ID.items()}
-            self.id_to_shape = {v: k for k, v in SHAPE_TO_ID.items()}
-            self.id_to_material = {v: k for k, v in MATERIAL_TO_ID.items()}
-            self.id_to_colour = {v: k for k, v in COLOUR_TO_ID.items()}
-            self.transforms.append(T.ToTensor())
-            self.transforms.append(T.Resize((448, 448)))
-            self.transforms = T.Compose(self.transforms)
-        with torch.no_grad():
-            img = np.asarray(image)
-            # T.ToPILImage()(self.transforms(img)).save('test/asd.png')
-            objects = []
-            a = 0
-            for mask in segmentation:
-                # print(mask.sum())
-                # print(img.shape)
-                mask_arr = mask.squeeze().to(torch.uint8).cpu().numpy()
-                # print(mask_arr.shape)
-                # print((img * np.expand_dims(mask_arr, 2)).shape)
-                # img_inp = np.concatenate((img, img), axis=0)
-                img_inp = np.concatenate((img, img * np.expand_dims(mask_arr, 2)), axis=0)
-                # print(img_inp.shape)
-                # T.ToPILImage()(self.transforms(img * np.expand_dims(mask_arr, 2))).save('test/asd.png')
-                img_inp = self.transforms(img_inp).to(self.device)
-                # print(img_inp.shape)
-                # exit()
-                # T.ToPILImage()(img_inp).save(f'test/asd_{a}.png')
-                a += 1
-                preds = self.model(img_inp.unsqueeze(0))
-                # print(preds[0])
-                # print(preds[0].shape)
-                _, class_id = torch.max(preds[0], 1)
-                class_id = class_id.item()
-                # print(class_id)
-                if class_id > 0:
-                    class_name = self.id_to_class[class_id]
-                else:
-                    class_name = "<NULL>"
-
-                _, shape_id = torch.max(preds[1], 1)
-                shape_id = shape_id.item()
-                shape_name = self.id_to_shape[shape_id]
-
-                _, material_id = torch.max(preds[2], 1)
-                material_id = material_id.item()
-                material_name = self.id_to_material[material_id]
-
-                _, colour_id = torch.max(preds[3], 1)
-                colour_id = colour_id.item()
-                colour_name = self.id_to_colour[colour_id]
-
-                _, scale_id = torch.max(preds[4], 1)
-                scale_id = scale_id.item()
-                if scale_id == 1:
-                    scale_factor = 0.6
-                else:
-                    scale_factor = 0.45
-
-                position = preds[5].squeeze().cpu().numpy()
-                # print(position)
-                orientation = preds[6].squeeze().cpu().numpy()
-
-                objects.append(
-                    {
-                        'name': class_name,
-                        'shape': shape_name,
-                        'material': material_name,
-                        'colour': colour_name,
-                        '3d_coords': position,
-                        'orientation': orientation
-                    }
-                )
-
-        if return_bboxes:
-            bboxes = []
-            positions = [np.array(o['3d_coords']) for o in scene_gt['objects']]
-            for obj in objects:
-                diffs = [np.abs(obj['3d_coords'] - p).sum() for p in positions]
-                min_idx = diffs.index(min(diffs))
-                match = scene_gt['objects'][min_idx]
-                bbox = match['bbox']
-                bbox = self._get_local_bounding_box(bbox)
-                bboxes.append(bbox)
-        else:
-            bboxes = None
-
-        poses = [
-            (o['3d_coords'], o['orientation']) for o in objects
-        ]
-
-        scene = objects
-
-        return poses, bboxes, scene
-
-    def _get_local_bounding_box(self, bbox):
-        bbox_wh = bbox['x'] / 2
-        bbox_dh = bbox['y'] / 2
-        bbox_h = bbox['z']
-
-        # Local bounding box w.r.t to local (0,0,0) - mid bottom
-        return np.array(
-            [
-                [ bbox_wh,  bbox_dh, 0],
-                [-bbox_wh,  bbox_dh, 0],
-                [-bbox_wh, -bbox_dh, 0],
-                [ bbox_wh, -bbox_dh, 0],
-                [ bbox_wh,  bbox_dh, bbox_h],
-                [-bbox_wh,  bbox_dh, bbox_h],
-                [-bbox_wh, -bbox_dh, bbox_h],
-                [ bbox_wh, -bbox_dh, bbox_h]
-            ]
-        )
+        return None
 
     def save_checkpoint(self, path, epoch=None, num_iter=None):
         checkpoint = {
@@ -712,4 +594,5 @@ class YCBAttributesTrainer(VisualRecognitionLoader):
             self.epoch = epoch
 
     def __str__(self):
-        return "Baseline Attributes ResNet"
+        return "YCB Attributes ResNet"
+

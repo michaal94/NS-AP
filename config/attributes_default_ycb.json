@@ -1,0 +1,36 @@
+{
+    "supervisor": {
+        "epochs": 200,
+        "tensorboard": true,
+        "logdir": "/media/m2data/NS_AP_outputs/attributes/YCB",
+        "debug_log": true,
+        "debug_freq": 250,
+        "display_freq": 10,
+        "checkpoint_freq": 250
+    },
+    "dataset_train": {
+        "name": "AttributesYCB",
+        "split": "train",
+        "path": "/home/michas/Desktop/codes/NS-AP/output_ycb_images",
+        "shuffle": true,
+        "batch": 64,
+        "num_workers": 12
+    },
+    "dataset_val": {
+        "name": "AttributesYCB",
+        "split": "val",
+        "path": "/home/michas/Desktop/codes/NS-AP/output_ycb_images",
+        "shuffle": false,
+        "batch": 32,
+        "num_workers": 12
+    },
+    "loss": {},
+    "optimiser": {
+        "name": "Adam"
+    },
+    "scheduler": {},
+    "model": {
+        "trainer_name": "YCBAttributesTrainer",
+        "model_name": "AttributesYCBModel"
+    }
+}

@@ -4,12 +4,14 @@ from .ns_ap_segmentation import SegmentationNSAP
 from .ns_ap_instructions import InstructionsNSAP
 from .ns_ap_attributes import AttributesNSAP
 from .ns_ap_actions import ActionPlanNSAP
+from .ycb_attributes import AttributesYCB
 
 NAME2CLASS = {
     "SegmentationNSAP": SegmentationNSAP,
     "InstructionsNSAP": InstructionsNSAP,
     "AttributesNSAP": AttributesNSAP,
-    "ActionPlanNSAP": ActionPlanNSAP
+    "ActionPlanNSAP": ActionPlanNSAP,
+    "AttributesYCB": AttributesYCB
 }
 
 def get_dataset(params):
