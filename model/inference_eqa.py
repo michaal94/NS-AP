@@ -144,6 +144,14 @@ class InferenceToolDebug:
             counter = 1
             assert len(scene_vis_gt) == len(poses_robot), 'Incorrect size'
             poses_robot, bboxes_robot = self._align_robot_debug(scene_vis_gt, labels_robot, poses_robot, bboxes_robot)
+            poses_to_apply = copy.deepcopy(poses_robot)
+            for i, o in enumerate(scene_vis_gt):
+                if o['name'] == 'cracker box':
+                    if o['stack_base']:
+                        poses_to_apply[i][0][2] = min(poses_to_apply[i][0][2], 0.036)
+                if o['name'] == 'sugar box':
+                    if o['stack_base']:
+                        poses_to_apply[i][0][2] = min(poses_to_apply[i][0][2], 0.02)
             self.environment.apply_external_poses(poses_robot)
         if not self.environment.blender_enabled:
             self.environment.render()
