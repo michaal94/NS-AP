@@ -8,6 +8,7 @@ import numpy as np
 import zmq
 import signal
 from PIL import Image
+from collections import Counter
 
 from robosuite import load_controller_config
 import robosuite.utils.transform_utils as T
@@ -1180,7 +1181,10 @@ class InferenceToolDebug:
             p_aligned, bb_aligned = [None] * len(obj_list), [None] * len(obj_list)
             missing = [name for name in obj_list]
             # Fill correct
+            cnt = Counter(labels)
             for i, name in enumerate(labels):
+                if cnt[name] > 1:
+                    continue
                 if name in obj_list:
                     skip = False
                     if self.last_grasp_target is not None:
