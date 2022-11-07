@@ -22,7 +22,7 @@ YCB_OFFSETS = {
     'mustard bottle': np.array([0.0, 0.0, 0.0]),
     'potted meat can': np.array([0.0, -0.015, 0.0]),
     'sugar box': np.array([0.0, 0.0, 0.0]),
-    'tomato soup can': np.array([0.0, 0.0, 0.0]),
+    'tomato soup can': np.array([-0.005, 0.0, 0.0]),
     'bowl': np.array([0.078698, 0.0, -0.003]),
     'mug': np.array([-0.012, 0.044335, 0.0]),
 }
@@ -58,7 +58,7 @@ class ActionExecutor:
         self.eps_move_trajectory = 0.01
         self.move_clearance = move_clearance
         self.pick_up_height = pick_up_height
-        self.angle_up_tolerance = np.pi / 6
+        self.angle_up_tolerance = np.pi / 4
         self.angle_diff_tol = np.pi / 45
         self.eps_move_l1_ori = np.pi / 180
         self.grasp_depth = 0.03
@@ -989,6 +989,9 @@ class ActionExecutor:
             gripper_mat = T.quat2mat(obs[f'robot0_eef_quat'])
             gripper_mat = T.quat2mat(target_quat)
             gripper_y_dir = gripper_mat[:, 1]
+            gripper_x_dir = gripper_mat[:, 0]
+            gripper_x_dir[2] = 0
+            gripper_x_dir = self._unit_vector(gripper_x_dir)
             gripper_y_dir[2] = 0
             gripper_y_dir = self._unit_vector(gripper_y_dir)
             z_coord = bbox[:, 2]
@@ -996,14 +999,19 @@ class ActionExecutor:
             target_pos[2] = z_coord
 
             if self.use_ycb_default_offsets:
-                target_pos += gripper_y_dir * YCB_OFFSETS_DEFAULT[target_name][0]
+                target_pos += gripper_x_dir * YCB_OFFSETS_DEFAULT[target_name][0]
             else:
-                target_pos += gripper_y_dir * YCB_OFFSETS[target_name][0]
+                target_pos += gripper_x_dir * YCB_OFFSETS[target_name][0]
 
             if self.use_ycb_default_offsets:
                 target_pos += np.array([0, 0, 1]) * YCB_OFFSETS_DEFAULT[target_name][2]
             else:
                 target_pos += np.array([0, 0, 1]) * YCB_OFFSETS[target_name][2]
+
+            if self.use_ycb_default_offsets:
+                target_pos += gripper_y_dir * YCB_OFFSETS_DEFAULT[target_name][1]
+            else:
+                target_pos += gripper_y_dir * YCB_OFFSETS[target_name][1]
 
             interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
             for p in interp_pos:

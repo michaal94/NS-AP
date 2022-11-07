@@ -405,6 +405,7 @@ class InferenceToolDebug:
                             self.update_sequence_json(observation, action_to_execute, observation_robot)
                         elif self.environment.blender_enabled:
                             self.update_sequence_json(observation, action_to_execute)
+                        # input()
                     else:
                         print('Action not executed correctly')
                         return InferenceCode.EXECUTION_ERROR
