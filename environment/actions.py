@@ -53,9 +53,9 @@ class ActionExecutor:
         self.eps_grasp = 0.001
         self.eps_pos = 0.002
         self.eps_move_end_grasp = 0.0075
-        self.eps_move_end = 0.015
+        self.eps_move_end = 0.01
         self.eps_move_trajectory_grasp = 0.008
-        self.eps_move_trajectory = 0.015
+        self.eps_move_trajectory = 0.01
         self.move_clearance = move_clearance
         self.pick_up_height = pick_up_height
         self.angle_up_tolerance = np.pi / 6
