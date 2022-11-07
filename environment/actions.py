@@ -52,8 +52,10 @@ class ActionExecutor:
         self.move_dict = None
         self.eps_grasp = 0.001
         self.eps_pos = 0.002
-        self.eps_move_end = 0.0075
-        self.eps_move_trajectory = 0.008
+        self.eps_move_end_grasp = 0.0075
+        self.eps_move_end = 0.015
+        self.eps_move_trajectory_grasp = 0.008
+        self.eps_move_trajectory = 0.015
         self.move_clearance = move_clearance
         self.pick_up_height = pick_up_height
         self.angle_up_tolerance = np.pi / 6
@@ -521,10 +523,17 @@ class ActionExecutor:
         # print(pos_diff)
         # print(diff_pos)
 
-        if len(self.move_dict['trajectory']):
-            eps_pos = self.eps_move_trajectory
+        if self.action == 'approach_grasp':
+            if len(self.move_dict['trajectory']):
+                eps_pos = self.eps_move_trajectory_grasp
+            else:
+                eps_pos = self.eps_move_end_grasp
         else:
-            eps_pos = self.eps_move_end
+            if len(self.move_dict['trajectory']):
+                eps_pos = self.eps_move_trajectory
+            else:
+                eps_pos = self.eps_move_end
+
 
         # print(diff_pos, eps_pos)
         ori_diff = T.get_orientation_error(curr_target_ori, eef_ori)
