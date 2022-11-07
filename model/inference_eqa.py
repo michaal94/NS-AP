@@ -4,6 +4,7 @@ import copy
 import pickle
 import time
 import numpy as np
+from datetime import datetime
 
 import zmq
 import signal
@@ -791,6 +792,11 @@ class InferenceToolDebug:
                 info_struct['observations_robot'] = []
             with open(self.json_path, 'w') as f:
                 json.dump(info_struct, f, indent=4)
+            with open(os.path.join(self.save_dir, 'timestamp.txt'), 'w') as f:
+                now = datetime.now()
+                f.write(
+                    f"{now.strftime('%Y/%m/%d, %H:%M:%S')}\n{datetime.timestamp(now)}"
+                )
 
         with open(self.json_path, 'r') as f:
             info_struct = json.load(f)
