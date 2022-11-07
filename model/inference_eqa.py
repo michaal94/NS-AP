@@ -1212,7 +1212,7 @@ class InferenceToolDebug:
                 print('Objects missing, filling with previous values')
                 print(missing)
                 gripper_action = obs['gripper_action']
-                gripper_on_obj = -0.98 < gripper_action < 0.98
+                gripper_on_obj = -0.98 < gripper_action < 0.95
                 # If gripper on any object:
                 if gripper_on_obj:
                     for name in missing:
