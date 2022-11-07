@@ -1107,6 +1107,9 @@ class InferenceToolDebug:
 
     def _shutdown_communication(self):
 
+        # self._socket_gripper_control.send(b'open')
+        # self._socket_gripper_control.recv()
+
         self._socket_state_msg.close()
         self._socket_gripper_control.close()
         self._socket_pose_control.close()

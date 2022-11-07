@@ -20,7 +20,7 @@ YCB_OFFSETS = {
     'cracker box': np.array([0.0, 0.0, 0.0]),
     'foam brick': np.array([0.0, 0.0, 0.0]),
     'mustard bottle': np.array([0.0, 0.0, 0.0]),
-    'potted meat can': np.array([0.0, 0.0, 0.0]),
+    'potted meat can': np.array([0.0, -0.015, 0.0]),
     'sugar box': np.array([0.0, 0.0, 0.0]),
     'tomato soup can': np.array([0.0, 0.0, 0.0]),
     'bowl': np.array([0.078698, 0.0, 0.0]),
