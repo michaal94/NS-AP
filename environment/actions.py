@@ -23,7 +23,7 @@ YCB_OFFSETS = {
     'potted meat can': np.array([0.0, -0.015, 0.0]),
     'sugar box': np.array([0.0, 0.0, 0.0]),
     'tomato soup can': np.array([0.0, 0.0, 0.0]),
-    'bowl': np.array([0.078698, 0.0, 0.0]),
+    'bowl': np.array([0.078698, 0.0, -0.003]),
     'mug': np.array([-0.012, 0.044335, 0.0]),
 }
 
@@ -999,6 +999,11 @@ class ActionExecutor:
                 target_pos += gripper_y_dir * YCB_OFFSETS_DEFAULT[target_name][0]
             else:
                 target_pos += gripper_y_dir * YCB_OFFSETS[target_name][0]
+
+            if self.use_ycb_default_offsets:
+                target_pos += np.array([0, 0, 1]) * YCB_OFFSETS_DEFAULT[target_name][2]
+            else:
+                target_pos += np.array([0, 0, 1]) * YCB_OFFSETS[target_name][2]
 
             interp_pos = self._get_dist_interp(obs['robot0_eef_pos'], target_pos, self.interp_dist)
             for p in interp_pos:
