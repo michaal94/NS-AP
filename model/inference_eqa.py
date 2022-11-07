@@ -361,6 +361,7 @@ class InferenceToolDebug:
                         observation, _, _, _ = self.environment.step(action)
                         if self.move_robot:
                             print(action_to_execute_robot)
+                            print(f'CURRENT_ACTION: {action_to_execute_robot}')
                             self._send_robot_action(action_robot, observation_robot)
                         # input()
                         if not self.environment.blender_enabled:
@@ -1069,8 +1070,8 @@ class InferenceToolDebug:
         return img, names, poses, bboxes
 
     def _setup_communication(self):
-        signal.signal(signal.SIGINT, self._shutdown_communication())
-        signal.signal(signal.SIGTERM, self._shutdown_communication())
+        signal.signal(signal.SIGINT, self._shutdown_communication)
+        signal.signal(signal.SIGTERM, self._shutdown_communication)
         context = zmq.Context()
         self._socket_state_msg = context.socket(zmq.SUB)
         self._socket_state_msg.setsockopt(zmq.SUBSCRIBE, b'')
@@ -1105,10 +1106,7 @@ class InferenceToolDebug:
         # self._socket_gripper_control.send(b'open')
         # exit()
 
-    def _shutdown_communication(self):
-
-        # self._socket_gripper_control.send(b'open')
-        # self._socket_gripper_control.recv()
+    def _shutdown_communication(self, *args):
 
         self._socket_state_msg.close()
         self._socket_gripper_control.close()
