@@ -169,7 +169,10 @@ class ActionExecutor:
         eef_pos = obs['robot0_eef_pos']
         eef_ori = obs['robot0_eef_quat']
         target_pos = eef_pos + np.array([0, 0, self.pick_up_height])
-        self.move_dict['trajectory'] = [(target_pos, eef_ori)]
+        self.move_dict['trajectory'] = [
+            (target_pos, eef_ori),
+            (target_pos, np.array([1.0, 0.0, 0.0, 0.0]))
+        ]
         self.move_dict['current_target'] = self.move_dict['trajectory'].pop(0)
 
     def _set_put_down(self, target, obs, scene):
