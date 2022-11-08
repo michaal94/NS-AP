@@ -168,8 +168,12 @@ class ActionExecutor:
         self.move_dict = {}
         eef_pos = obs['robot0_eef_pos']
         eef_ori = obs['robot0_eef_quat']
+        intermediate_pos1 = eef_pos + np.array([0, 0, 0.01])
+        intermediate_pos2 = eef_pos + np.array([0, 0, 0.03])
         target_pos = eef_pos + np.array([0, 0, self.pick_up_height])
         self.move_dict['trajectory'] = [
+            (intermediate_pos1, eef_ori),
+            (intermediate_pos2, eef_ori),
             (target_pos, eef_ori)
         ]
         in_between_quat = self._get_quat_interp(
