@@ -23,7 +23,7 @@ YCB_OFFSETS = {
     'potted meat can': np.array([0.0, -0.015, 0.0]),
     'sugar box': np.array([0.0, 0.0, 0.0]),
     'tomato soup can': np.array([-0.005, 0.0, 0.0]),
-    'bowl': np.array([0.078698, 0.0, -0.005]),
+    'bowl': np.array([0.0, 0.078698, -0.005]),
     'mug': np.array([-0.012, 0.044335, 0.0]),
 }
 
@@ -35,7 +35,7 @@ YCB_OFFSETS_DEFAULT = {
     'potted meat can': np.array([0.0, 0.0, 0.0]),
     'sugar box': np.array([0.0, 0.0, 0.0]),
     'tomato soup can': np.array([0.0, 0.0, 0.0]),
-    'bowl': np.array([0.078698, 0.0, 0.0]),
+    'bowl': np.array([0.0, 0.078698, 0.0]),
     'mug': np.array([-0.012, 0.044335, 0.0]),
 }
 
