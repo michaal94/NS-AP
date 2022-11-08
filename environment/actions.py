@@ -19,7 +19,7 @@ YCB_OFFSETS = {
     'bleach cleanser': np.array([0.009209, 0.0, 0.0]),
     'cracker box': np.array([0.0, 0.0, 0.0]),
     'foam brick': np.array([0.0, 0.0, 0.0]),
-    'mustard bottle': np.array([0.0, 0.0, 0.0]),
+    'mustard bottle': np.array([0.0, -0.02, 0.0]),
     'potted meat can': np.array([0.0, -0.015, 0.0]),
     'sugar box': np.array([0.0, 0.0, 0.0]),
     'tomato soup can': np.array([-0.005, 0.0, 0.0]),
