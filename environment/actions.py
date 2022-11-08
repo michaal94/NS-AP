@@ -170,9 +170,20 @@ class ActionExecutor:
         eef_ori = obs['robot0_eef_quat']
         target_pos = eef_pos + np.array([0, 0, self.pick_up_height])
         self.move_dict['trajectory'] = [
-            (target_pos, eef_ori),
-            (target_pos, np.array([1.0, 0.0, 0.0, 0.0]))
+            (target_pos, eef_ori)
         ]
+        in_between_quat = self._get_quat_interp(
+            eef_ori,
+            np.array([1.0, 0.0, 0.0, 0.0]),
+            angle = self.interp_angle
+        )
+        for q in in_between_quat:
+            self.move_dict['trajectory'].append((
+                target_pos, q.copy()
+            ))
+        self.move_dict['trajectory'].append(
+            (target_pos, np.array([1.0, 0.0, 0.0, 0.0]))
+        )
         self.move_dict['current_target'] = self.move_dict['trajectory'].pop(0)
 
     def _set_put_down(self, target, obs, scene):
