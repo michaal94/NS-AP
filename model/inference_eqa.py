@@ -1014,7 +1014,7 @@ class InferenceToolDebug:
         # print(des_pos)
         if all([des_ori[i] < 0 for i in range(3)]):
             des_ori = - des_ori
-        shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.103]))
+        shift_to_wrist = np.matmul(T.quat2mat(des_ori), np.array([0, 0, -0.1034]))
         des_pos += shift_to_wrist 
         # print(des_pos)
         if action[6] > 0:
