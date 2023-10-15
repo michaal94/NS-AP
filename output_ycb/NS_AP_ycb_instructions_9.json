@@ -180,6 +180,70 @@
             "template_internal_idx": 0,
             "template_overall_idx": 0,
             "instruction_idx": 0
+        },
+        {
+            "split": "new",
+            "image_filename": "NS_AP_demo_000093.png",
+            "image_index": 93,
+            "instruction": "Stack metal objects from heaviest to lightest.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2,
+                        3
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "input_value": "metal",
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "order_weight",
+                    "input": [
+                        0,
+                        1,
+                        2
+                    ],
+                    "input_value": "ascending",
+                    "output": [
+                        2,
+                        1,
+                        0
+                    ]
+                },
+                {
+                    "input": null,
+                    "type": "stack",
+                    "input_value": null,
+                    "output": [
+                        [
+                            2,
+                            1,
+                            0
+                        ]
+                    ]
+                }
+            ],
+            "template_id": "stack_order",
+            "task_id": "stack",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
         }
     ]
 }

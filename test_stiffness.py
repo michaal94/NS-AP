@@ -13,15 +13,12 @@ else:
 
 import json
 import argparse
-from model.inference_eqa import InferenceToolDebug, InferenceCode
+from model.inference_eqa_stiffness import InferenceToolDebug, InferenceCode
 from utils.utils import extract_args
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '--input_instruction_json', default=''
-)
-parser.add_argument(
-    '--instruction_idx', default=0, type=int
 )
 parser.add_argument(
     '--input_scene_dir', default=''
@@ -103,7 +100,7 @@ def main(args):
     # if idx not in [str(i) for i in range(10)]:
     #     print("Wrong idx chosen, try again")
     #     exit()
-    idx = args.instruction_idx
+    idx = 0
     instr = instruction_struct['instructions'][idx]
     print(f"Chosen instruction:\t{instr['instruction']}")
 
@@ -126,8 +123,7 @@ def main(args):
         pose_model_params=pose_model_params,
         action_planner_params=action_planner_params,
         disable_rendering=False,
-        save_dir=save_dir,
-        move_robot=False
+        save_dir=save_dir
     )
 
     inference_tool.load_scene_gt(scene)

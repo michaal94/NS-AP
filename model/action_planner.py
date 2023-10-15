@@ -76,6 +76,51 @@ class ActionGTPlanner(ActionPlanInference):
                     ('pick_up', target_idx)
                 ]
             return action_list
+        elif goal['task'] == 'measure_stiffness':
+            target_idx = target[0]
+            target_state = scene_state[target_idx]
+            in_hand = None
+            for idx, obj in enumerate(scene_state):
+                if obj['in_hand']:
+                    in_hand = idx
+            if in_hand is not None:
+                if in_hand != target_idx:
+                    if scene_state[in_hand]['raised']:
+                        action_list = [
+                            ('put_down', in_hand),
+                            ('release', None),
+                            ('move', target_idx),
+                            ('approach_grasp', target_idx),
+                            ('grasp', target_idx)
+                        ]
+                    else:
+                        action_list = [
+                            ('release', None),
+                            ('move', target_idx),
+                            ('approach_grasp', target_idx),
+                            ('grasp', target_idx)
+                        ]
+                else:
+                    if target_state['raised']:
+                        action_list = [('put_down', in_hand)]
+                    else:
+                        action_list = []
+            elif target_state['approached']:
+                action_list = [
+                    ('grasp', target_idx)
+                ]
+            elif target_state['gripper_over']:
+                action_list = [
+                    ('approach_grasp', target_idx),
+                    ('grasp', target_idx)
+                ]
+            else:
+                action_list = [
+                    ('move', target_idx),
+                    ('approach_grasp', target_idx),
+                    ('grasp', target_idx)
+                ]
+            return action_list
         elif goal['task'] == 'stack':
             in_hand = None
             for idx, obj in enumerate(scene_state):

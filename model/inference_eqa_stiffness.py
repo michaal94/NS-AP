@@ -90,7 +90,7 @@ class InferenceToolDebug:
               disable_rendering = False, 
               save_dir = 'temp',
               verbose = True,
-              move_robot = True
+              move_robot = False
         ):
         self.move_robot = move_robot
         self.verbose = verbose
@@ -468,6 +468,8 @@ class InferenceToolDebug:
                     obj['raised'] = True
                     if obs['grasped_obj_idx'] == idx:
                         obj['weight'] = obs['weight_measurement']
+                if obs['grasped_obj_idx'] == idx:
+                    obj['stiffness'] = obs['weight_measurement'].item()
         elif robot:
             #TODO
             # Do the pose matching w.r.t history
@@ -518,6 +520,8 @@ class InferenceToolDebug:
                     obj['raised'] = True
                 if obj['raised'] and obj['in_hand']:
                     obj['weight'] = obs['weight_measurement']
+                if obj['in_hand']:
+                    obj['stiffness'] = obs['weight_measurement'].item()
         else:
             #TODO
             # Do the pose matching w.r.t history
@@ -568,6 +572,8 @@ class InferenceToolDebug:
                     obj['raised'] = True
                 if obj['raised'] and obj['in_hand']:
                     obj['weight'] = obs['weight_measurement']
+                if obj['in_hand']:
+                    obj['stiffness'] = obs['weight_measurement'].item()
                 # print(obj['name'], obj['in_hand'], obj['raised'])
 
     def _angle_between(self, v1, v2):
@@ -684,6 +690,7 @@ class InferenceToolDebug:
             scene_graph.append(copy.deepcopy(o))
             scene_graph[-1]['pos'] = poses[i][0]
             scene_graph[-1]['ori'] = poses[i][1]
+            scene_graph[-1]['stiffness'] = None
             scene_graph[-1]['bbox'] = bboxes[i]
             scene_graph[-1]['in_hand'] = False
             scene_graph[-1]['raised'] = False
@@ -914,6 +921,7 @@ class InferenceToolDebug:
         info_struct['observations_gt'].append(obs_set_gt)
         if self.move_robot:
             info_struct['observations_robot'].append(obs_set_robot)
+        # print(info_struct)
         with open(self.json_path, 'w') as f:
             json.dump(info_struct, f, indent=4)
         self.obs_num += 1

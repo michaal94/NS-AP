@@ -81,8 +81,12 @@ class ProgramExecutor:
         if 'filter' in function:
             if 'weight' in function:
                 return True
+            if 'stiffness' in function:
+                return True
         if 'query' in function:
             if 'weight' in function:
+                return True
+            if 'stiffness' in function:
                 return True
         if 'pick_up' in function:
             return True
