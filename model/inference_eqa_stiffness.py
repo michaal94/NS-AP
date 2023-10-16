@@ -120,6 +120,7 @@ class InferenceToolDebug:
         self.prev_relative_pose = None
         self.last_grasp_target = None
         self.last_robot_act = None
+        self.last_action_env = None
         json_name = "sequence.json"
         self.json_path = os.path.join(self.save_dir, json_name)
 
@@ -319,6 +320,7 @@ class InferenceToolDebug:
                             observation,
                             self.scene_graph
                         )
+                        self.last_action_env = action_to_execute[0]
                     if len(action_plan_robot) > 0:
                         action_to_execute_robot = action_plan_robot[0]
                         self.action_executor_robot.set_action(
