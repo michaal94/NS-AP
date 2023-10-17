@@ -90,7 +90,7 @@ class InferenceToolDebug:
               disable_rendering = False, 
               save_dir = 'temp',
               verbose = True,
-              move_robot = False
+              move_robot = True
         ):
         self.move_robot = move_robot
         self.verbose = verbose
