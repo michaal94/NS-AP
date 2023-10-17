@@ -523,7 +523,7 @@ class InferenceToolDebug:
                 if obj['raised'] and obj['in_hand']:
                     obj['weight'] = obs['weight_measurement']
                 if obj['in_hand']:
-                    obj['stiffness'] = obs['weight_measurement'].item()
+                    obj['stiffness'] = obs['weight_measurement']
         else:
             #TODO
             # Do the pose matching w.r.t history
