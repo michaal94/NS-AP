@@ -587,6 +587,8 @@ class InferenceToolDebug:
         return vector / np.linalg.norm(vector)
 
     def _check_eef_in_bbox(self, obj, eef_pos):
+        allowed_displacement_percentage = 0.1
+        multiplier = 1 + allowed_displacement_percentage
         bbox = obj['bbox']
         x_vec = bbox[0] - bbox[1]
         y_vec = bbox[0] - bbox[3]
@@ -599,13 +601,13 @@ class InferenceToolDebug:
         mid_to_eef_vec = eef_pos - bbox_mid
         axes_in = []
         x_proj = np.abs(np.dot(mid_to_eef_vec, x_vec) / x_size)
-        if x_proj < x_size / 2:
+        if x_proj < (x_size / 2) * multiplier:
             axes_in.append('x')
         y_proj = np.abs(np.dot(mid_to_eef_vec, y_vec) / y_size)
-        if y_proj < y_size / 2:
+        if y_proj < (y_size / 2) * multiplier:
             axes_in.append('y')
         z_proj = np.abs(np.dot(mid_to_eef_vec, z_vec) / z_size)
-        if z_proj < z_size / 2:
+        if z_proj < (z_size / 2) * multiplier:
             axes_in.append('z')
         return axes_in 
 
