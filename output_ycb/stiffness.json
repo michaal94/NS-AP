@@ -1,0 +1,66 @@
+{
+    "info": {
+        "date": "07/10/2022",
+        "version": "1.0",
+        "split": "demo",
+        "license": "Creative Commons Attribution (CC-BY 4.0)"
+    },
+    "instructions": [
+        {
+            "split": "demo",
+            "image_filename": "NS_AP_demo_000030.png",
+            "image_index": 30,
+            "instruction": "Pick up the heaviest of all metal objects.",
+            "program": [
+                {
+                    "input": null,
+                    "type": "scene",
+                    "input_value": null,
+                    "output": [
+                        0,
+                        1,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_material",
+                    "input": [
+                        0,
+						2
+                    ],
+                    "input_value": "metal",
+                    "output": [
+                        0,
+                        2
+                    ]
+                },
+                {
+                    "type": "filter_stiffness",
+                    "input": [
+                        0,
+                        2
+                    ],
+                    "input_value": "biggest",
+                    "output": [
+                        2
+                    ]
+                },
+                {
+                    "type": "pick_up",
+                    "input": [
+                        2
+                    ],
+                    "input_value": null,
+                    "output": [
+                        2
+                    ]
+                }
+            ],
+            "template_id": "pick_up_lightest",
+            "task_id": "pick_up",
+            "template_internal_idx": 0,
+            "template_overall_idx": 0,
+            "instruction_idx": 0
+        }
+    ]
+}
